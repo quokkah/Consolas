@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import static java.nio.file.Files.readAllLines;
 
@@ -24,9 +25,11 @@ public class Main extends Application { //TODO: Clean up all these variables .-.
     String preInput = "";
     String[] lines = new String[0];
     String state = "sol";
+    String correctPass;
     String input;
     Path pathCommands = Paths.get("src/main/resources/console/consolas/commands.txt");
     boolean usernameInUse = false;
+    boolean usernameExists = false;
     int accountNumber;
     Path userPath = java.nio.file.Paths.get("src/main/resources/console/consolas/userData/usernames.txt");
     Path passPath = java.nio.file.Paths.get("src/main/resources/console/consolas/userData/passwords.txt");
@@ -45,7 +48,7 @@ public class Main extends Application { //TODO: Clean up all these variables .-.
         primaryStage.setScene(scene);
         primaryStage.setX(0);
         primaryStage.setY(0);
-        primaryStage.setFullScreen(true); //turn this off when debugging
+        primaryStage.setFullScreen(false); //turn this off when debugging
         primaryStage.setFullScreenExitHint("");
         primaryStage.show();
         choice("Do you want to Sign up or Log in?", "Sign Up, Log In");
@@ -84,7 +87,8 @@ public class Main extends Application { //TODO: Clean up all these variables .-.
                                     say("Username:");
                                     break;
                                 case "2":
-                                    state = "logIn";
+                                    state = "logInUs";
+                                    say("Username:");
                                     break;
                                 default:
                                     say("Please type a number from 1-2!");
@@ -95,6 +99,12 @@ public class Main extends Application { //TODO: Clean up all these variables .-.
                             break;
                         case "signUpPass":
                             signUpPass();
+                            break;
+                        case "logInUs":
+                            logInUs();
+                            break;
+                        case "logInPass":
+                            logInPass();
                             break;
                         case "exit":
                             switch (input) {
@@ -157,6 +167,40 @@ public class Main extends Application { //TODO: Clean up all these variables .-.
             signUpPass();
         }
     }
+    void logInUs() {
+        usernameExists = false;
+        accountNumber = 0;
+        try {
+            for (String line : readAllLines(userPath)) {
+                accountNumber++;
+                if (Objects.equals(line, input)) {
+                    usernameExists = true;
+                    break;
+                }
+            }
+            if (usernameExists) {
+                try (Stream<String> lines = Files.lines(passPath)) {
+                    correctPass = lines.skip(accountNumber - 1).findFirst().get();
+                    state = "logInPass";
+                    say("Password:");
+                }
+            } else {
+                say("Username not found");
+                say("Username:");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    void logInPass() {
+        if (Objects.equals(input, correctPass)) {
+            state = "home";
+            clear();
+        } else {
+            say("Wrong password");
+            say("Password:");
+        }
+    }
 
     //Methods
     void say(String text) {
@@ -180,8 +224,8 @@ public class Main extends Application { //TODO: Clean up all these variables .-.
         if (input.startsWith("-")) {
             say(passOrUser + " cannot start with '-'");
             return false;
-        } else if (input.isEmpty()) {
-            say(passOrUser + " cannot be empty");
+        } else if (Objects.equals(input, "Username:")) {
+            say(passOrUser + " cannot be empty or be called 'Username:'");
             return false;
         } else if (input.contains(" ")) {
             say(passOrUser + " cannot contain spaces");
