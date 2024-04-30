@@ -28,9 +28,11 @@ public class Main extends Application { //TODO: Clean up all these variables
     String state = "sol";
     String correctPass;
     String input;
+    String usernameInput;
     Path pathCommands = Paths.get("src/main/resources/console/consolas/commands.txt");
     boolean usernameInUse = false;
     boolean usernameExists = false;
+    boolean signedIn = false;
     boolean fullScreen = false;         //turn this off when debugging
     int accountNumber;
     Path userPath = java.nio.file.Paths.get("src/main/resources/console/consolas/userData/usernames.txt");
@@ -60,7 +62,8 @@ public class Main extends Application { //TODO: Clean up all these variables
                 lines = preInput.split("\n");
                 if (lines.length >= 1) {
                     input = lines[lines.length - 1];
-                    managingInput(primaryStage);
+
+                    managingState(primaryStage);
                 }
             } else if (Objects.requireNonNull(ke.getCode()) == KeyCode.F11) {
                 fullScreen = !fullScreen;
@@ -68,7 +71,13 @@ public class Main extends Application { //TODO: Clean up all these variables
             }
         });
     }
-    public void managingInput(Stage primaryStage) {
+    public void managingState(Stage primaryStage) {
+        switch (input) {
+            case "-ex":
+            case "-exit":
+                state = "none";
+                break;
+        }
         try {
             Method method = this.getClass().getMethod(state, Stage.class);
             method.invoke(this, primaryStage);
@@ -86,9 +95,9 @@ public class Main extends Application { //TODO: Clean up all these variables
         inputSplit = input.split(" ");
         if (inputSplit.length > 0) {
             switch (inputSplit[0]) {
-                case "ex":
-                case "exit":
-                    state = "exit";
+                case "cl":
+                case "close":
+                    state = "close";
                     choice("Are you sure you want to close the program?", "Yes, No");
                     break;
                 case "he":
@@ -106,6 +115,7 @@ public class Main extends Application { //TODO: Clean up all these variables
                 case "log out":
                 case "logout":
                     state = "sol";
+                    signedIn = false;
                     clear(false);
                     choice("Do you want to Sign up or Log in?", "Sign Up, Log In");
                     break;
@@ -123,6 +133,7 @@ public class Main extends Application { //TODO: Clean up all these variables
         }
     }
     public void sol(Stage primaryStage) {
+        clear(false);
         switch (input) {
             case "1":
                 state = "signUpUs";
@@ -136,9 +147,19 @@ public class Main extends Application { //TODO: Clean up all these variables
                 say("Please type a number from 1-2!");
         }
     }       //SignUp or LogIn
+    public void none(Stage primaryStage) {
+        clear(false);
+        if (signedIn) {
+            say("Type 'help' for commands");
+            state = "home";
+        } else {
+            choice("Do you want to Sign up or Log in?", "Sign Up, Log In");
+            state = "sol";
+        }
+    }
 
     //Commands (States)
-    public void exit(Stage primaryStage) {
+    public void close(Stage primaryStage) {
         switch (input) {
             case "1":
                 System.exit(0);
@@ -152,21 +173,9 @@ public class Main extends Application { //TODO: Clean up all these variables
     }
     public void signUpUs(Stage primaryStage) {
         if (dataReqs(input, "Username")) {
-            try {
-                for (String line : readAllLines(userPath)) {
-                    accountNumber++;
-                    if (Objects.equals(line, "-")) {
-                        List<String> linesUser = Files.readAllLines(userPath, StandardCharsets.UTF_8);
-                        linesUser.set(accountNumber - 1, input);
-                        Files.write(userPath, linesUser, StandardCharsets.UTF_8);
-                        break;
-                    }
-                }
-                state = "signUpPass";
-                say("Password:");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            state = "signUpPass";
+            usernameInput = input;
+            say("Password:");
         } else {
             usernameInUse = false;
             say("Username:");
@@ -176,6 +185,15 @@ public class Main extends Application { //TODO: Clean up all these variables
         if (dataReqs(input, "Password")) {
             List<String> linesPass;
             try {
+                for (String line : readAllLines(userPath)) {
+                    accountNumber++;
+                    if (Objects.equals(line, "-")) {
+                        List<String> linesUser = Files.readAllLines(userPath, StandardCharsets.UTF_8);
+                        linesUser.set(accountNumber - 1, usernameInput);
+                        Files.write(userPath, linesUser, StandardCharsets.UTF_8);
+                        break;
+                    }
+                }
                 linesPass = Files.readAllLines(passPath, StandardCharsets.UTF_8);
                 linesPass.set(accountNumber - 1, input);
                 Files.write(passPath, linesPass, StandardCharsets.UTF_8);
@@ -183,6 +201,7 @@ public class Main extends Application { //TODO: Clean up all these variables
                 throw new RuntimeException(e);
             }
             state = "home";
+            signedIn = true;
             clear(true);
         } else {
             signUpPass(primaryStage);
@@ -216,6 +235,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     public void logInPass(Stage primaryStage) {
         if (Objects.equals(input, correctPass)) {
             state = "home";
+            signedIn = true;
             clear(true);
         } else {
             say("Wrong password");
