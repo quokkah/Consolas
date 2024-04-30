@@ -16,6 +16,8 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import static java.nio.file.Files.readAllLines;
 
 public class Main extends Application { //TODO: Clean up all these variables
@@ -67,87 +69,11 @@ public class Main extends Application { //TODO: Clean up all these variables
         });
     }
     public void managingInput(Stage primaryStage) {
-        switch (state) {        //selecting the current state
-            case "home":
-                //User Input ↓↓↓↓↓
-                inputSplit = input.split(" ");
-                if (inputSplit.length > 0) {
-                    switch (inputSplit[0]) {
-                        case "ex":
-                        case "exit":
-                            state = "exit";
-                            choice("Are you sure you want to close the program?", "Yes, No");
-                            break;
-                        case "he":
-                        case "help":
-                            try {
-                                for (String line : Files.readAllLines(pathCommands)) {
-                                    say(line);
-                                }
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                            break;
-                        case "lo":
-                        case "log":
-                        case "log out":
-                        case "logout":
-                            state = "sol";
-                            clear(false);
-                            choice("Do you want to Sign up or Log in?", "Sign Up, Log In");
-                            break;
-                        case "fu":
-                        case "full":
-                        case "fullscreen":
-                            fullScreen = !fullScreen;
-                            primaryStage.setFullScreen(fullScreen);
-                            break;
-                        default:
-                            say("Unknown Command!");
-                    }
-                } else {
-                    say("Unknown Command!");
-                }
-                break;
-            //User Input ↑↑↑↑↑
-            case "sol":
-                switch (input) {
-                    case "1":
-                        state = "signUpUs";
-                        say("Username:");
-                        break;
-                    case "2":
-                        state = "logInUs";
-                        say("Username:");
-                        break;
-                    default:
-                        say("Please type a number from 1-2!");
-                }
-                break;
-            case "signUpUs":
-                signUpUs();
-                break;
-            case "signUpPass":
-                signUpPass();
-                break;
-            case "logInUs":
-                logInUs();
-                break;
-            case "logInPass":
-                logInPass();
-                break;
-            case "exit":
-                switch (input) {
-                    case "1":
-                        System.exit(0);
-                        break;
-                    case "2":
-                        clear(true);
-                        break;
-                    default:
-                        say("Please type a number from 1-2!");
-                }
-                break;
+        try {
+            Method method = this.getClass().getMethod(state, Stage.class);
+            method.invoke(this, primaryStage);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            System.out.println("Unknown State!");
         }
     }
 
@@ -155,8 +81,76 @@ public class Main extends Application { //TODO: Clean up all these variables
         launch(args);
     }
 
-    //Commands
-    void signUpUs() {
+    //Main States
+    public void home(Stage primaryStage) {
+        inputSplit = input.split(" ");
+        if (inputSplit.length > 0) {
+            switch (inputSplit[0]) {
+                case "ex":
+                case "exit":
+                    state = "exit";
+                    choice("Are you sure you want to close the program?", "Yes, No");
+                    break;
+                case "he":
+                case "help":
+                    try {
+                        for (String line : Files.readAllLines(pathCommands)) {
+                            say(line);
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    break;
+                case "lo":
+                case "log":
+                case "log out":
+                case "logout":
+                    state = "sol";
+                    clear(false);
+                    choice("Do you want to Sign up or Log in?", "Sign Up, Log In");
+                    break;
+                case "fu":
+                case "full":
+                case "fullscreen":
+                    fullScreen = !fullScreen;
+                    primaryStage.setFullScreen(fullScreen);
+                    break;
+                default:
+                    say("Unknown Command!");
+            }
+        } else {
+            say("Unknown Command!");
+        }
+    }
+    public void sol(Stage primaryStage) {
+        switch (input) {
+            case "1":
+                state = "signUpUs";
+                say("Username:");
+                break;
+            case "2":
+                state = "logInUs";
+                say("Username:");
+                break;
+            default:
+                say("Please type a number from 1-2!");
+        }
+    }       //SignUp or LogIn
+
+    //Commands (States)
+    public void exit(Stage primaryStage) {
+        switch (input) {
+            case "1":
+                System.exit(0);
+                break;
+            case "2":
+                clear(true);
+                break;
+            default:
+                say("Please type a number from 1-2!");
+        }
+    }
+    public void signUpUs(Stage primaryStage) {
         if (dataReqs(input, "Username")) {
             try {
                 for (String line : readAllLines(userPath)) {
@@ -178,7 +172,7 @@ public class Main extends Application { //TODO: Clean up all these variables
             say("Username:");
         }
     }
-    void signUpPass() {
+    public void signUpPass(Stage primaryStage) {
         if (dataReqs(input, "Password")) {
             List<String> linesPass;
             try {
@@ -191,10 +185,10 @@ public class Main extends Application { //TODO: Clean up all these variables
             state = "home";
             clear(true);
         } else {
-            signUpPass();
+            signUpPass(primaryStage);
         }
     }
-    void logInUs() {
+    public void logInUs(Stage primaryStage) {
         usernameExists = false;
         accountNumber = 0;
         try {
@@ -219,7 +213,7 @@ public class Main extends Application { //TODO: Clean up all these variables
             throw new RuntimeException(e);
         }
     }
-    void logInPass() {
+    public void logInPass(Stage primaryStage) {
         if (Objects.equals(input, correctPass)) {
             state = "home";
             clear(true);
@@ -229,7 +223,8 @@ public class Main extends Application { //TODO: Clean up all these variables
         }
     }
 
-    //Methods
+
+    //Utilities
     void say(String text) {
         textArea.appendText(text + "\n");
     }
