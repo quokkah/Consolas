@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 
 import static java.nio.file.Files.readAllLines;
 
-public class Main extends Application { //TODO: Clean up all these variables .-.
+public class Main extends Application { //TODO: Clean up all these variables
     TextArea textArea = new TextArea();
     String preInput = "";
     String[] lines = new String[0];
