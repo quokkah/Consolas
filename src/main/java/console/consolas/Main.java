@@ -31,7 +31,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     Path pathCommands = Paths.get("src/main/resources/console/consolas/commands.txt");
     boolean usernameInUse = false;
     boolean usernameExists = false;
-    boolean fullScreen = true;         //turn this off when debugging
+    boolean fullScreen = false;         //turn this off when debugging
     int accountNumber;
     Path userPath = java.nio.file.Paths.get("src/main/resources/console/consolas/userData/usernames.txt");
     Path passPath = java.nio.file.Paths.get("src/main/resources/console/consolas/userData/passwords.txt");
@@ -42,7 +42,6 @@ public class Main extends Application { //TODO: Clean up all these variables
         Font font = Font.loadFont("file:src/main/resources/console/consolas/fonts/CONSOLA.TTF", 20);
         textArea.setFont(font);
         StackPane.setAlignment(textArea, Pos.TOP_LEFT);
-
         root.getChildren().add(textArea);
         Scene scene = new Scene(root);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("stylesheet.css")).toExternalForm());
@@ -61,92 +60,95 @@ public class Main extends Application { //TODO: Clean up all these variables
                 lines = preInput.split("\n");
                 if (lines.length >= 1) {
                     input = lines[lines.length - 1];
-
-                    switch (state) {        //selecting the current state
-                        case "home":
-                        //User Input ↓↓↓↓↓
-                            inputSplit = input.split(" ");
-                            if (inputSplit.length > 0) {
-                                switch (inputSplit[0]) {
-                                    case "ex":
-                                    case "exit":
-                                        state = "exit";
-                                        choice("Are you sure you want to close the program?", "Yes, No");
-                                        break;
-                                    case "he":
-                                    case "help":
-                                        try {
-                                            for (String line : Files.readAllLines(pathCommands)) {
-                                                say(line);
-                                            }
-                                        } catch (IOException e) {
-                                            throw new RuntimeException(e);
-                                        }
-                                        break;
-                                    case "lo":
-                                    case "log":
-                                    case "log out":
-                                    case "logout":
-                                        state = "sol";
-                                        clear(false);
-                                        choice("Do you want to Sign up or Log in?", "Sign Up, Log In");
-                                        break;
-                                    case "fu":
-                                    case "full":
-                                    case "fullscreen":
-                                        fullScreen = !fullScreen;
-                                        primaryStage.setFullScreen(!fullScreen);
-                                        break;
-                                    default:
-                                        say("Unknown Command!");
-                                }
-                            } else {
-                                say("Unknown Command!");
-                            }
-                            break;
-                        //User Input ↑↑↑↑↑
-                        case "sol":
-                            switch (input) {
-                                case "1":
-                                    state = "signUpUs";
-                                    say("Username:");
-                                    break;
-                                case "2":
-                                    state = "logInUs";
-                                    say("Username:");
-                                    break;
-                                default:
-                                    say("Please type a number from 1-2!");
-                            }
-                            break;
-                        case "signUpUs":
-                            signUpUs();
-                            break;
-                        case "signUpPass":
-                            signUpPass();
-                            break;
-                        case "logInUs":
-                            logInUs();
-                            break;
-                        case "logInPass":
-                            logInPass();
-                            break;
-                        case "exit":
-                            switch (input) {
-                                case "1":
-                                    System.exit(0);
-                                    break;
-                                case "2":
-                                    clear(true);
-                                    break;
-                                default:
-                                    say("Please type a number from 1-2!");
-                            }
-                            break;
-                    }
+                    managingInput(primaryStage);
                 }
             }
         });
+    }
+
+    public void managingInput(Stage primaryStage) {
+        switch (state) {        //selecting the current state
+            case "home":
+                //User Input ↓↓↓↓↓
+                inputSplit = input.split(" ");
+                if (inputSplit.length > 0) {
+                    switch (inputSplit[0]) {
+                        case "ex":
+                        case "exit":
+                            state = "exit";
+                            choice("Are you sure you want to close the program?", "Yes, No");
+                            break;
+                        case "he":
+                        case "help":
+                            try {
+                                for (String line : Files.readAllLines(pathCommands)) {
+                                    say(line);
+                                }
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                            break;
+                        case "lo":
+                        case "log":
+                        case "log out":
+                        case "logout":
+                            state = "sol";
+                            clear(false);
+                            choice("Do you want to Sign up or Log in?", "Sign Up, Log In");
+                            break;
+                        case "fu":
+                        case "full":
+                        case "fullscreen":
+                            fullScreen = !fullScreen;
+                            primaryStage.setFullScreen(fullScreen);
+                            break;
+                        default:
+                            say("Unknown Command!");
+                    }
+                } else {
+                    say("Unknown Command!");
+                }
+                break;
+            //User Input ↑↑↑↑↑
+            case "sol":
+                switch (input) {
+                    case "1":
+                        state = "signUpUs";
+                        say("Username:");
+                        break;
+                    case "2":
+                        state = "logInUs";
+                        say("Username:");
+                        break;
+                    default:
+                        say("Please type a number from 1-2!");
+                }
+                break;
+            case "signUpUs":
+                signUpUs();
+                break;
+            case "signUpPass":
+                signUpPass();
+                break;
+            case "logInUs":
+                logInUs();
+                break;
+            case "logInPass":
+                logInPass();
+                break;
+            case "exit":
+                switch (input) {
+                    case "1":
+                        System.exit(0);
+                        break;
+                    case "2":
+                        clear(true);
+                        break;
+                    default:
+                        say("Please type a number from 1-2!");
+                }
+                break;
+        }
     }
 
     public static void main(String[] args) {
