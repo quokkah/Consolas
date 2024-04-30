@@ -30,6 +30,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     String input;
     String usernameInput;
     Path pathCommands = Paths.get("src/main/resources/console/consolas/commands.txt");
+    Path pathTitle = Paths.get("src/main/resources/console/consolas/title.txt");
     boolean usernameInUse = false;
     boolean usernameExists = false;
     boolean signedIn = false;
@@ -54,6 +55,13 @@ public class Main extends Application { //TODO: Clean up all these variables
         primaryStage.setFullScreen(fullScreen);
         primaryStage.setFullScreenExitHint("");
         primaryStage.show();
+        try {
+            for (String line : Files.readAllLines(pathTitle)) {
+                say(line);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         choice("Do you want to Sign up or Log in?", "Sign Up, Log In");
 
         textArea.setOnKeyPressed(ke -> {
@@ -273,6 +281,13 @@ public class Main extends Application { //TODO: Clean up all these variables
         textArea.clear();
         if (resetState) {
             state = "home";
+            try {
+                for (String line : Files.readAllLines(pathTitle)) {
+                    say(line);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             say("Type 'help' for commands");
         }
     }
