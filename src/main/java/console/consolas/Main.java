@@ -23,6 +23,7 @@ import static java.nio.file.Files.readAllLines;
 public class Main extends Application { //TODO: Clean up all these variables
     TextArea textArea = new TextArea();
     String preInput = "";
+    String[] inputSplit;
     String[] lines = new String[0];
     String state = "sol";
     String correctPass;
@@ -30,6 +31,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     Path pathCommands = Paths.get("src/main/resources/console/consolas/commands.txt");
     boolean usernameInUse = false;
     boolean usernameExists = false;
+    boolean fullScreen = true;         //turn this off when debugging
     int accountNumber;
     Path userPath = java.nio.file.Paths.get("src/main/resources/console/consolas/userData/usernames.txt");
     Path passPath = java.nio.file.Paths.get("src/main/resources/console/consolas/userData/passwords.txt");
@@ -48,7 +50,7 @@ public class Main extends Application { //TODO: Clean up all these variables
         primaryStage.setScene(scene);
         primaryStage.setX(0);
         primaryStage.setY(0);
-        primaryStage.setFullScreen(false); //turn this off when debugging
+        primaryStage.setFullScreen(fullScreen);
         primaryStage.setFullScreenExitHint("");
         primaryStage.show();
         choice("Do you want to Sign up or Log in?", "Sign Up, Log In");
@@ -62,36 +64,47 @@ public class Main extends Application { //TODO: Clean up all these variables
 
                     switch (state) {        //selecting the current state
                         case "home":
-                            switch (input) {
-                                //User Input ↓↓↓↓↓
-                                case "ex":
-                                case "exit":
-                                    state = "exit";
-                                    choice("Are you sure you want to close the program?", "Yes, No");
-                                    break;
-                                case "he":
-                                case "help":
-                                    try {
-                                        for (String line : Files.readAllLines(pathCommands)) {
-                                            say(line);
+                        //User Input ↓↓↓↓↓
+                            inputSplit = input.split(" ");
+                            if (inputSplit.length > 0) {
+                                switch (inputSplit[0]) {
+                                    case "ex":
+                                    case "exit":
+                                        state = "exit";
+                                        choice("Are you sure you want to close the program?", "Yes, No");
+                                        break;
+                                    case "he":
+                                    case "help":
+                                        try {
+                                            for (String line : Files.readAllLines(pathCommands)) {
+                                                say(line);
+                                            }
+                                        } catch (IOException e) {
+                                            throw new RuntimeException(e);
                                         }
-                                    } catch (IOException e) {
-                                        throw new RuntimeException(e);
-                                    }
-                                    break;
-                                case "lo":
-                                case "log":
-                                case "log out":
-                                case "logout":
-                                    state = "sol";
-                                    clear(false);
-                                    choice("Do you want to Sign up or Log in?", "Sign Up, Log In");
-                                    break;
-                                default:
-                                    say("Unknown Command!");
-                                //User Input ↑↑↑↑↑
+                                        break;
+                                    case "lo":
+                                    case "log":
+                                    case "log out":
+                                    case "logout":
+                                        state = "sol";
+                                        clear(false);
+                                        choice("Do you want to Sign up or Log in?", "Sign Up, Log In");
+                                        break;
+                                    case "fu":
+                                    case "full":
+                                    case "fullscreen":
+                                        fullScreen = !fullScreen;
+                                        primaryStage.setFullScreen(!fullScreen);
+                                        break;
+                                    default:
+                                        say("Unknown Command!");
+                                }
+                            } else {
+                                say("Unknown Command!");
                             }
                             break;
+                        //User Input ↑↑↑↑↑
                         case "sol":
                             switch (input) {
                                 case "1":
