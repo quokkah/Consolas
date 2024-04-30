@@ -1,0 +1,4 @@
+help - Show all available commands
+exit - Close the program
+
+Tip: You only have to write the first two letters of the commands
