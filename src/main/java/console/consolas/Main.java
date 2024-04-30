@@ -76,6 +76,10 @@ public class Main extends Application { //TODO: Clean up all these variables .-.
                                         throw new RuntimeException(e);
                                     }
                                     break;
+                                case "logout":      //TODO: make it work
+                                    state = "sol";
+                                    clear();
+                                    break;
                                 default:
                                     say("Unknown Command!");
                             }
