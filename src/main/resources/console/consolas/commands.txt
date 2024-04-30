@@ -1,4 +1,10 @@
+Commands:
 help - Show all available commands
 close - Close the program
 logout - Log out of the program
+
+System Controls:
+-back - Return to the last step
+-exit - Get back to the main menu
+
 Tip: You only have to write the first two letters of the commands
