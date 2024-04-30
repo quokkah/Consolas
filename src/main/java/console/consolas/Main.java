@@ -8,7 +8,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.text.Font;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -17,7 +16,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import static java.nio.file.Files.readAllLines;
 
 public class Main extends Application { //TODO: Clean up all these variables
@@ -65,7 +63,6 @@ public class Main extends Application { //TODO: Clean up all these variables
             }
         });
     }
-
     public void managingInput(Stage primaryStage) {
         switch (state) {        //selecting the current state
             case "home":
