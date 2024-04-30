@@ -60,6 +60,9 @@ public class Main extends Application { //TODO: Clean up all these variables
                     input = lines[lines.length - 1];
                     managingInput(primaryStage);
                 }
+            } else if (Objects.requireNonNull(ke.getCode()) == KeyCode.F11) {
+                fullScreen = !fullScreen;
+                primaryStage.setFullScreen(fullScreen);
             }
         });
     }
