@@ -30,7 +30,9 @@ public class Main extends Application { //TODO: Clean up all these variables
     String input;
     String usernameInput;
     String currentUsername;
+    String currentPass;
     String unconfirmedUser;
+    String unconfirmedPass;
     Path pathCommands = Paths.get("src/main/resources/console/consolas/commands.txt");
     Path pathTitle = Paths.get("src/main/resources/console/consolas/title.txt");
     boolean usernameInUse = false;
@@ -155,6 +157,21 @@ public class Main extends Application { //TODO: Clean up all these variables
                         choice(currentUsername, "Change it; Go back");
                     }
                     break;
+                case "pa":
+                case "pass":
+                case "password":
+                    try (Stream<String> lines = Files.lines(passPath)) {
+                        currentPass = lines.skip(accountNumber - 1).findFirst().get();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    if (inputSplit.length > 1) {
+
+                    } else {
+                        state = "passDefault";
+                        choice("Do you want to view or edit your password?", "View; Change; Go Back");
+                    }
+                    break;
                 default:
                     say("Unknown Command!");
             }
@@ -198,7 +215,7 @@ public class Main extends Application { //TODO: Clean up all these variables
             default:
                 say("Please type a number from 1-2!");
         }
-    }
+    }           //TODO: check if Stage primaryStage is really necessary
     public void signUpUs(Stage primaryStage) {
         if (dataReqs(input, "Username")) {
             state = "signUpPass";
@@ -303,10 +320,62 @@ public class Main extends Application { //TODO: Clean up all these variables
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+                clear(false);
+                say("Username successfully changed" + "\nType 'help' for commands");
+                state = "home";
                 break;
             case "2":
                 state = "home";
-                say("\nType 'help' for commands");
+                clear(true);
+                break;
+            default:
+                say("Please type a number from 1-2!");
+        }
+    }
+    public void passDefault(Stage primaryStage) {
+        switch (input) {
+            case "1":
+                say("Your current password is: '" + currentPass + "'");
+                state = "home";
+                break;
+            case "2":
+                say("New Password:");
+                state = "passChange";
+                break;
+            case "3":
+                state = "home";
+                break;
+            default:
+                say("Please type a number from 1-3!");
+        }
+    }
+    public void passChange(Stage primaryStage) {
+        unconfirmedPass = input;
+        if (dataReqs(unconfirmedPass, "Password")) {
+            choice("Do you want to change your password to '" + unconfirmedPass + "'?", "Yes; No");
+            state = "passConfirm";
+        } else {
+            say("New Password:");
+        }
+    }
+    public void passConfirm(Stage primaryStage) {
+        switch (input) {
+            case "1":
+                try {
+                    List<String> linesPass = Files.readAllLines(passPath, StandardCharsets.UTF_8);
+                    linesPass.set(accountNumber - 1, unconfirmedPass);
+                    Files.write(passPath, linesPass, StandardCharsets.UTF_8);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                clear(false);
+                title();
+                say("Password successfully changed" + "\nType 'help' for commands");
+                state = "home";
+                break;
+            case "2":
+                state = "home";
+                clear(true);
                 break;
             default:
                 say("Please type a number from 1-2!");
