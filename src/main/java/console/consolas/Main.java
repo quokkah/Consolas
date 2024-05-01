@@ -55,13 +55,6 @@ public class Main extends Application { //TODO: Clean up all these variables
         primaryStage.setFullScreen(fullScreen);
         primaryStage.setFullScreenExitHint("");
         primaryStage.show();
-        try {
-            for (String line : Files.readAllLines(pathTitle)) {
-                say(line);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         choice("Do you want to Sign up or Log in?", "Sign Up, Log In");
 
         textArea.setOnKeyPressed(ke -> {
@@ -141,7 +134,6 @@ public class Main extends Application { //TODO: Clean up all these variables
         }
     }
     public void sol(Stage primaryStage) {
-        clear(false);
         switch (input) {
             case "1":
                 state = "signUpUs";
@@ -173,7 +165,6 @@ public class Main extends Application { //TODO: Clean up all these variables
                 System.exit(0);
                 break;
             case "2":
-                clear(true);
                 break;
             default:
                 say("Please type a number from 1-2!");
