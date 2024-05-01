@@ -63,7 +63,6 @@ public class Main extends Application { //TODO: Clean up all these variables
                 lines = preInput.split("\n");
                 if (lines.length >= 1) {
                     input = lines[lines.length - 1];
-
                     managingState(primaryStage);
                 }
             } else if (Objects.requireNonNull(ke.getCode()) == KeyCode.F11) {
@@ -74,8 +73,8 @@ public class Main extends Application { //TODO: Clean up all these variables
     }
     public void managingState(Stage primaryStage) {
         switch (input) {
-            case "-ex":
-            case "-exit":
+            case "-ba":
+            case "-back":
                 state = "none";
                 break;
         }
@@ -181,35 +180,29 @@ public class Main extends Application { //TODO: Clean up all these variables
         }
     }
     public void signUpPass(Stage primaryStage) {
-        if (Objects.equals(input, "-back") || Objects.equals(input, "-ba")) {
-            clear(false);
-            state = "signUpUs";
-            say("Username:");
-        } else {
-            if (dataReqs(input, "Password")) {
-                List<String> linesPass;
-                try {
-                    for (String line : readAllLines(userPath)) {
-                        accountNumber++;
-                        if (Objects.equals(line, "-")) {
-                            List<String> linesUser = Files.readAllLines(userPath, StandardCharsets.UTF_8);
-                            linesUser.set(accountNumber - 1, usernameInput);
-                            Files.write(userPath, linesUser, StandardCharsets.UTF_8);
-                            break;
-                        }
+        if (dataReqs(input, "Password")) {
+            List<String> linesPass;
+            try {
+                for (String line : readAllLines(userPath)) {
+                    accountNumber++;
+                    if (Objects.equals(line, "-")) {
+                        List<String> linesUser = Files.readAllLines(userPath, StandardCharsets.UTF_8);
+                        linesUser.set(accountNumber - 1, usernameInput);
+                        Files.write(userPath, linesUser, StandardCharsets.UTF_8);
+                        break;
                     }
-                    linesPass = Files.readAllLines(passPath, StandardCharsets.UTF_8);
-                    linesPass.set(accountNumber - 1, input);
-                    Files.write(passPath, linesPass, StandardCharsets.UTF_8);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
                 }
-                state = "home";
-                signedIn = true;
-                clear(true);
-            } else {
-                signUpPass(primaryStage);
+                linesPass = Files.readAllLines(passPath, StandardCharsets.UTF_8);
+                linesPass.set(accountNumber - 1, input);
+                Files.write(passPath, linesPass, StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
+            state = "home";
+            signedIn = true;
+            clear(true);
+        } else {
+            signUpPass(primaryStage);
         }
     }
     public void logInUs(Stage primaryStage) {
@@ -238,19 +231,13 @@ public class Main extends Application { //TODO: Clean up all these variables
         }
     }
     public void logInPass(Stage primaryStage) {
-        if (Objects.equals(input, "-back") || Objects.equals(input, "-ba")) {
-            clear(false);
-            state = "logInUs";
-            say("Username:");
+        if (Objects.equals(input, correctPass)) {
+            state = "home";
+            signedIn = true;
+            clear(true);
         } else {
-            if (Objects.equals(input, correctPass)) {
-                state = "home";
-                signedIn = true;
-                clear(true);
-            } else {
-                say("Wrong password");
-                say("Password:");
-            }
+            say("Wrong password");
+            say("Password:");
         }
     }
 
