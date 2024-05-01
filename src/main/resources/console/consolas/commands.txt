@@ -3,6 +3,7 @@ help - Show all available commands
 close - Close the program
 logout - Log out of the program
 fullscreen - Toggles fullscreen (F11 works as well)
+username view|change - View or change your username
 
 System Controls:
 -back - Exit to main menu

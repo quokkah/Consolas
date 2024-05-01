@@ -130,15 +130,27 @@ public class Main extends Application { //TODO: Clean up all these variables
                 case "us":
                 case "user":
                 case "username":
+                    try (Stream<String> lines = Files.lines(userPath)) {
+                        currentUsername = lines.skip(accountNumber - 1).findFirst().get();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                     if (inputSplit.length > 1) {
-
+                        switch (inputSplit[1]) {
+                            case "vi":
+                            case "view":
+                                say("Your current username is: '" + currentUsername + "'");
+                                break;
+                            case "ch":
+                            case "change":
+                                say("New Username:");
+                                state = "userChange";
+                                break;
+                            default:
+                                say("Unknown Command!");
+                        }
                     } else {
                         state = "userDefault";
-                        try (Stream<String> lines = Files.lines(userPath)) {
-                            currentUsername = lines.skip(accountNumber - 1).findFirst().get();
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
                         currentUsername = "Your current username is: '" + currentUsername + "', do you want to change it?";
                         choice(currentUsername, "Change it; Go back");
                     }
