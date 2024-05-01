@@ -95,9 +95,9 @@ public class Main extends Application { //TODO: Clean up all these variables
         inputSplit = input.split(" ");
         if (inputSplit.length > 0) {
             switch (inputSplit[0]) {
-                case "cl":
-                case "close":
-                    state = "close";
+                case "ex":
+                case "exit":
+                    state = "exit";
                     choice("Are you sure you want to close the program?", "Yes, No");
                     break;
                 case "he":
@@ -147,10 +147,9 @@ public class Main extends Application { //TODO: Clean up all these variables
         }
     }       //SignUp or LogIn
     public void none(Stage primaryStage) {
-        clear(false);
         if (signedIn) {
-            say("Type 'help' for commands");
             state = "home";
+            say("\nType 'help' for commands");
         } else {
             choice("Do you want to Sign up or Log in?", "Sign Up, Log In");
             state = "sol";
@@ -158,7 +157,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     }
 
     //Commands (States)
-    public void close(Stage primaryStage) {
+    public void exit(Stage primaryStage) {
         switch (input) {
             case "1":
                 System.exit(0);
@@ -259,14 +258,17 @@ public class Main extends Application { //TODO: Clean up all these variables
         textArea.clear();
         if (resetState) {
             state = "home";
-            try {
-                for (String line : Files.readAllLines(pathTitle)) {
-                    say(line);
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            title();
             say("Type 'help' for commands");
+        }
+    }
+    void title() {
+        try {
+            for (String line : Files.readAllLines(pathTitle)) {
+                say(line);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
     boolean dataReqs(String input, String passOrUser) {
