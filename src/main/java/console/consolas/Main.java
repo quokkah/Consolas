@@ -8,6 +8,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.text.Font;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -33,6 +34,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     String currentPass;
     String unconfirmedUser;
     String unconfirmedPass;
+    String userFilePath = "src/main/resources/console/consolas/userData/account";
     Path pathCommands = Paths.get("src/main/resources/console/consolas/commands.txt");
     Path pathTitle = Paths.get("src/main/resources/console/consolas/title.txt");
     boolean usernameInUse = false;
@@ -40,8 +42,8 @@ public class Main extends Application { //TODO: Clean up all these variables
     boolean signedIn = false;
     boolean fullScreen = true;         //turn this off when debugging
     int accountNumber;
-    Path userPath = java.nio.file.Paths.get("src/main/resources/console/consolas/userData/usernames.txt");
-    Path passPath = java.nio.file.Paths.get("src/main/resources/console/consolas/userData/passwords.txt");
+    Path userPath = java.nio.file.Paths.get("src/main/resources/console/consolas/accountData/usernames.txt");
+    Path passPath = java.nio.file.Paths.get("src/main/resources/console/consolas/accountData/passwords.txt");
 
     @Override
     public void start(Stage primaryStage) {
@@ -72,8 +74,20 @@ public class Main extends Application { //TODO: Clean up all these variables
             } else if (Objects.requireNonNull(ke.getCode()) == KeyCode.F11) {
                 fullScreen = !fullScreen;
                 primaryStage.setFullScreen(fullScreen);
+            } else if (Objects.requireNonNull(ke.getCode()) == KeyCode.ALT_GRAPH) {
+                System.out.println(accountNumber);
             }
         });
+    }
+    public void createFiles() {
+        userFilePath += accountNumber;
+        new File(userFilePath).mkdirs();
+        userFilePath += "/notes";
+        new File(userFilePath).mkdirs();
+        userFilePath = "src/main/resources/console/consolas/userData/account";
+        state = "home";
+        signedIn = true;
+        clear(true);
     }
     public void managingState(Stage primaryStage) {
         switch (input) {
@@ -259,6 +273,7 @@ public class Main extends Application { //TODO: Clean up all these variables
         if (dataReqs(input, "Password")) {
             List<String> linesPass;
             try {
+                accountNumber = 0;
                 for (String line : readAllLines(userPath)) {
                     accountNumber++;
                     if (Objects.equals(line, "-")) {
@@ -274,9 +289,7 @@ public class Main extends Application { //TODO: Clean up all these variables
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            state = "home";
-            signedIn = true;
-            clear(true);
+            createFiles();
         } else {
             signUpPass(primaryStage);
         }
