@@ -184,6 +184,10 @@ public class Main extends Application { //TODO: Clean up all these variables
                         choice("Do you want to view or edit your password?", "View; Change; Go Back");
                     }
                     break;
+                case "cl":
+                case "clear":
+                    clear(true);
+                    break;
                 default:
                     say("Unknown Command!");
             }

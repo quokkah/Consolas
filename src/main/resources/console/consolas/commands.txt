@@ -3,6 +3,7 @@ help - Show all available commands
 close - Close the program
 logout - Log out of the program
 fullscreen - Toggles fullscreen (F11 works as well)
+clear - Clear the screen
 username view|change - View or change your username
 password view|change - View or change your password
 
