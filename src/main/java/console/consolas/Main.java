@@ -34,7 +34,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     boolean usernameInUse = false;
     boolean usernameExists = false;
     boolean signedIn = false;
-    boolean fullScreen = false;         //turn this off when debugging
+    boolean fullScreen = true;         //turn this off when debugging
     int accountNumber;
     Path userPath = java.nio.file.Paths.get("src/main/resources/console/consolas/userData/usernames.txt");
     Path passPath = java.nio.file.Paths.get("src/main/resources/console/consolas/userData/passwords.txt");
