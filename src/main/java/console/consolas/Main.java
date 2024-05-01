@@ -166,7 +166,19 @@ public class Main extends Application { //TODO: Clean up all these variables
                         throw new RuntimeException(e);
                     }
                     if (inputSplit.length > 1) {
-
+                        switch (inputSplit[1]) {
+                            case "vi":
+                            case "view":
+                                say("Your current password is: '" + currentPass + "'");
+                                break;
+                            case "ch":
+                            case "change":
+                                say("New Password:");
+                                state = "passChange";
+                                break;
+                            default:
+                                say("Unknown Command!");
+                        }
                     } else {
                         state = "passDefault";
                         choice("Do you want to view or edit your password?", "View; Change; Go Back");
@@ -195,8 +207,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     }       //SignUp or LogIn
     public void none(Stage primaryStage) {
         if (signedIn) {
-            state = "home";
-            say("\nType 'help' for commands");
+            clear(true);
         } else {
             choice("Do you want to Sign up or Log in?", "Sign Up; Log In");
             state = "sol";
@@ -302,12 +313,16 @@ public class Main extends Application { //TODO: Clean up all these variables
     }
     public void userChange(Stage primaryStage) {
         unconfirmedUser = input;
-        if (dataReqs(unconfirmedUser, "Username")) {
-            choice("Do you want to change your username to '" + unconfirmedUser + "'?", "Yes; No");
-            state = "userConfirm";
+        if (!Objects.equals(unconfirmedUser, currentUsername)) {
+            if (dataReqs(unconfirmedUser, "Username")) {
+                choice("Do you want to change your username to '" + unconfirmedUser + "'?", "Yes; No");
+                state = "userConfirm";
+            } else {
+                usernameInUse = false;
+                say("New Username:");
+            }
         } else {
-            usernameInUse = false;
-            say("New Username:");
+            say("New Username cannot be your old Username" + "\nNew Username:");
         }
     }
     public void userConfirm(Stage primaryStage) {
@@ -351,11 +366,15 @@ public class Main extends Application { //TODO: Clean up all these variables
     }
     public void passChange(Stage primaryStage) {
         unconfirmedPass = input;
-        if (dataReqs(unconfirmedPass, "Password")) {
-            choice("Do you want to change your password to '" + unconfirmedPass + "'?", "Yes; No");
-            state = "passConfirm";
+        if (!Objects.equals(unconfirmedPass, currentPass)) {
+            if (dataReqs(unconfirmedPass, "Password")) {
+                choice("Do you want to change your password to '" + unconfirmedPass + "'?", "Yes; No");
+                state = "passConfirm";
+            } else {
+                say("New Password:");
+            }
         } else {
-            say("New Password:");
+            say("New Password cannot be your old Password" + "\nNew Password:");
         }
     }
     public void passConfirm(Stage primaryStage) {

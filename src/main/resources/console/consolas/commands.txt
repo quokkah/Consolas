@@ -4,6 +4,7 @@ close - Close the program
 logout - Log out of the program
 fullscreen - Toggles fullscreen (F11 works as well)
 username view|change - View or change your username
+password view|change - View or change your password
 
 System Controls:
 -back - Exit to main menu
