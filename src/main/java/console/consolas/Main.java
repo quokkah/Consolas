@@ -35,10 +35,13 @@ public class Main extends Application { //TODO: Clean up all these variables
     String unconfirmedUser;
     String unconfirmedPass;
     String userFilePath = "src/main/resources/console/consolas/userData/account";
+    String[] noteOptions = new String[8];       //TODO: Increase this random number
+    String noteOptionsFused = "";
     Path pathCommands = Paths.get("src/main/resources/console/consolas/commands.txt");
     Path pathTitle = Paths.get("src/main/resources/console/consolas/title.txt");
     boolean usernameInUse = false;
     boolean usernameExists = false;
+    boolean firstNoteOption = true;
     boolean signedIn = false;
     boolean fullScreen = true;         //turn this off when debugging
     int accountNumber;
@@ -199,6 +202,21 @@ public class Main extends Application { //TODO: Clean up all these variables
                 case "cl":
                 case "clear":
                     clear(true);
+                    break;
+                case "no":
+                case "notes":
+                    for ()
+                    firstNoteOption = true;
+                    noteOptionsFused = "";
+                    for (String option : noteOptions) {
+                        if (!firstNoteOption) {
+                            noteOptionsFused += "; ";
+                        }
+                        noteOptionsFused += option;
+                        firstNoteOption = false;
+                    }
+                    noteOptionsFused += "; Go back";
+                    choice("What note do you want to edit?", noteOptionsFused);
                     break;
                 default:
                     say("Unknown Command!");
