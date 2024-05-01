@@ -1,5 +1,6 @@
 .root {
-    -fx-background-color: #222831;
+    -fx-background-color: #000000;
+    -fx-border-color: #000000;
 }
 
 .text-area {
@@ -9,5 +10,16 @@
     -fx-text-fill: #00ff00;
     -fx-background-insets: 0;
     -fx-background-color: #000000;
+}
+
+.thumb, .increment-arrow, .decrement-arrow {
+    -fx-background-color: #1fc600;
+    -fx-border-color: #1fc600;
+    -fx-border-width: 0;
+}
+
+.track, .increment-button, .decrement-button, .corner {
+    -fx-background-color: #000000;
+    -fx-border-color: #000000;
 }
 

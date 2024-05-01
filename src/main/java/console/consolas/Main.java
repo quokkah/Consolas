@@ -29,6 +29,8 @@ public class Main extends Application { //TODO: Clean up all these variables
     String correctPass;
     String input;
     String usernameInput;
+    String currentUsername;
+    String unconfirmedUser;
     Path pathCommands = Paths.get("src/main/resources/console/consolas/commands.txt");
     Path pathTitle = Paths.get("src/main/resources/console/consolas/title.txt");
     boolean usernameInUse = false;
@@ -55,7 +57,7 @@ public class Main extends Application { //TODO: Clean up all these variables
         primaryStage.setFullScreen(fullScreen);
         primaryStage.setFullScreenExitHint("");
         primaryStage.show();
-        choice("Do you want to Sign up or Log in?", "Sign Up, Log In");
+        choice("Do you want to Sign up or Log in?", "Sign Up; Log In");
 
         textArea.setOnKeyPressed(ke -> {
             if (Objects.requireNonNull(ke.getCode()) == KeyCode.ENTER) {
@@ -98,7 +100,7 @@ public class Main extends Application { //TODO: Clean up all these variables
                 case "ex":
                 case "exit":
                     state = "exit";
-                    choice("Are you sure you want to close the program?", "Yes, No");
+                    choice("Are you sure you want to close the program?", "Close it; Go back");
                     break;
                 case "he":
                 case "help":
@@ -117,13 +119,29 @@ public class Main extends Application { //TODO: Clean up all these variables
                     state = "sol";
                     signedIn = false;
                     clear(false);
-                    choice("Do you want to Sign up or Log in?", "Sign Up, Log In");
+                    choice("Do you want to Sign up or Log in?", "Sign Up; Log In");
                     break;
                 case "fu":
                 case "full":
                 case "fullscreen":
                     fullScreen = !fullScreen;
                     primaryStage.setFullScreen(fullScreen);
+                    break;
+                case "us":
+                case "user":
+                case "username":
+                    if (inputSplit.length > 1) {
+
+                    } else {
+                        state = "userDefault";
+                        try (Stream<String> lines = Files.lines(userPath)) {
+                            currentUsername = lines.skip(accountNumber - 1).findFirst().get();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                        currentUsername = "Your current username is: '" + currentUsername + "', do you want to change it?";
+                        choice(currentUsername, "Change it; Go back");
+                    }
                     break;
                 default:
                     say("Unknown Command!");
@@ -151,7 +169,7 @@ public class Main extends Application { //TODO: Clean up all these variables
             state = "home";
             say("\nType 'help' for commands");
         } else {
-            choice("Do you want to Sign up or Log in?", "Sign Up, Log In");
+            choice("Do you want to Sign up or Log in?", "Sign Up; Log In");
             state = "sol";
         }
     }
@@ -163,6 +181,7 @@ public class Main extends Application { //TODO: Clean up all these variables
                 System.exit(0);
                 break;
             case "2":
+                state = "home";
                 break;
             default:
                 say("Please type a number from 1-2!");
@@ -239,7 +258,48 @@ public class Main extends Application { //TODO: Clean up all these variables
             say("Password:");
         }
     }
-
+    public void userDefault(Stage primaryStage) {
+        switch (input) {
+            case "1":
+                say("New Username:");
+                state = "userChange";
+                break;
+            case "2":
+                state = "home";
+                break;
+            default:
+                say("Please type a number from 1-2!");
+        }
+    }
+    public void userChange(Stage primaryStage) {
+        unconfirmedUser = input;
+        if (dataReqs(unconfirmedUser, "Username")) {
+            choice("Do you want to change your username to '" + unconfirmedUser + "'?", "Yes; No");
+            state = "userConfirm";
+        } else {
+            usernameInUse = false;
+            say("New Username:");
+        }
+    }
+    public void userConfirm(Stage primaryStage) {
+        switch (input) {
+            case "1":
+                try {
+                    List<String> linesUser = Files.readAllLines(userPath, StandardCharsets.UTF_8);
+                    linesUser.set(accountNumber - 1, unconfirmedUser);
+                    Files.write(userPath, linesUser, StandardCharsets.UTF_8);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+            case "2":
+                state = "home";
+                say("\nType 'help' for commands");
+                break;
+            default:
+                say("Please type a number from 1-2!");
+        }
+    }
 
     //Utilities
     void say(String text) {
@@ -247,7 +307,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     }
     void choice(String question, String options) {
         int optionCounter = 0;
-        String[] optionsSplit = options.split(", ");
+        String[] optionsSplit = options.split("; ");
         say(question);
         for (String option : optionsSplit) {
             optionCounter++;
