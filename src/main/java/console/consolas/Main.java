@@ -118,10 +118,8 @@ public class Main extends Application { //TODO: Clean up all these variables
                 case "log":
                 case "log out":
                 case "logout":
-                    state = "sol";
-                    signedIn = false;
-                    clear(false);
-                    choice("Do you want to Sign up or Log in?", "Sign Up; Log In");
+                    state = "logout";
+                    choice("Are you sure you want to log out?", "Yes; No");
                     break;
                 case "fu":
                 case "full":
@@ -213,6 +211,7 @@ public class Main extends Application { //TODO: Clean up all these variables
         if (signedIn) {
             clear(true);
         } else {
+            clear(false);
             choice("Do you want to Sign up or Log in?", "Sign Up; Log In");
             state = "sol";
         }
@@ -231,6 +230,21 @@ public class Main extends Application { //TODO: Clean up all these variables
                 say("Please type a number from 1-2!");
         }
     }           //TODO: check if Stage primaryStage is really necessary
+    public void logout(Stage primaryStage) {
+        switch (input) {
+            case "1":
+                state = "sol";
+                signedIn = false;
+                clear(false);
+                choice("Do you want to Sign up or Log in?", "Sign Up; Log In");
+                break;
+            case "2":
+                state = "home";
+                break;
+            default:
+                say("Please type a number from 1-2!");
+        }
+    }
     public void signUpUs(Stage primaryStage) {
         if (dataReqs(input, "Username")) {
             state = "signUpPass";
