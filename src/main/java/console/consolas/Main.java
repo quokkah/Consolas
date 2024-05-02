@@ -34,8 +34,11 @@ public class Main extends Application { //TODO: Clean up all these variables
     String currentPass;
     String unconfirmedUser;
     String unconfirmedPass;
+    String notesFolderPath;
+    String currentNotePath;
     String userFilePath = "src/main/resources/console/consolas/userData/account";
     String[] noteOptions = new String[8];       //TODO: Increase this random number
+    String[] noteOptionPaths = new String [noteOptions.length];
     String noteOptionsFused = "";
     Path pathCommands = Paths.get("src/main/resources/console/consolas/commands.txt");
     Path pathTitle = Paths.get("src/main/resources/console/consolas/title.txt");
@@ -45,6 +48,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     boolean signedIn = false;
     boolean fullScreen = true;         //turn this off when debugging
     int accountNumber;
+    int noteEdited;
     Path userPath = java.nio.file.Paths.get("src/main/resources/console/consolas/accountData/usernames.txt");
     Path passPath = java.nio.file.Paths.get("src/main/resources/console/consolas/accountData/passwords.txt");
 
@@ -204,8 +208,25 @@ public class Main extends Application { //TODO: Clean up all these variables
                     clear(true);
                     break;
                 case "no":
+                case "note":
                 case "notes":
-                    for ()
+                    notesFolderPath = "src/main/resources/console/consolas/userData/account";
+                    notesFolderPath += accountNumber;
+                    notesFolderPath += "/notes";
+                    File folder = new File(notesFolderPath);
+                    File[] listOfFiles = folder.listFiles();
+                    if(listOfFiles != null) {
+                        for (int x = 0; x < listOfFiles.length; x++) {
+                            if (listOfFiles[x].isFile()) {
+                                noteOptions[x] = (listOfFiles[x].getName());
+                            }
+                        }
+                    }
+                    for (int x = 0; x < noteOptions.length; x++) {
+                        if (Objects.equals(noteOptions[x], null)) {
+                            noteOptions[x] = "-Create New Note-";
+                        }
+                    }
                     firstNoteOption = true;
                     noteOptionsFused = "";
                     for (String option : noteOptions) {
@@ -217,6 +238,12 @@ public class Main extends Application { //TODO: Clean up all these variables
                     }
                     noteOptionsFused += "; Go back";
                     choice("What note do you want to edit?", noteOptionsFused);
+                    for (int x = 0; x < noteOptions.length; x++) {
+                        noteOptionPaths[x] = notesFolderPath + "/";
+                        noteOptionPaths[x] += noteOptions[x];
+                    }
+                    notesFolderPath = "";       //remember to reset this!
+                    state = "notesOptions";
                     break;
                 default:
                     say("Unknown Command!");
@@ -448,6 +475,17 @@ public class Main extends Application { //TODO: Clean up all these variables
             default:
                 say("Please type a number from 1-2!");
         }
+    }
+    public void notesOptions(Stage primaryStage) {
+        if (Integer.parseInt(input) >= 1 && Integer.parseInt(input) <= 8) {
+            noteEdited = Integer.parseInt(input) - 1;
+            state = "editingNote";
+        } else {
+            say("Please type a number from 1-" + noteOptions.length + 1 + "!");
+        }
+    }
+    public void editingNote(Stage primaryStage) {
+        currentNotePath = noteOptionPaths[noteEdited];
     }
 
     //Utilities
