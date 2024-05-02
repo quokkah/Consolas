@@ -205,7 +205,7 @@ public class Main extends Application { //TODO: Clean up all these variables
                     break;
                 case "cl":
                 case "clear":
-                    clear(true);
+                    clear(true);            //TODO: Make clear command work ALWAYS!!!!!
                     break;
                 case "no":
                 case "note":
@@ -238,6 +238,7 @@ public class Main extends Application { //TODO: Clean up all these variables
                     }
                     noteOptionsFused += "; Go back";
                     choice("What note do you want to edit?", noteOptionsFused);
+                    say("Tip: In order to stop editing the file, type '-back'!");
                     for (int x = 0; x < noteOptions.length; x++) {
                         noteOptionPaths[x] = notesFolderPath + "/";
                         noteOptionPaths[x] += noteOptions[x];
@@ -477,15 +478,21 @@ public class Main extends Application { //TODO: Clean up all these variables
         }
     }
     public void notesOptions(Stage primaryStage) {
-        if (Integer.parseInt(input) >= 1 && Integer.parseInt(input) <= 8) {
-            noteEdited = Integer.parseInt(input) - 1;
-            state = "editingNote";
+        if (input.matches("[0-9]+")) {
+            if (Integer.parseInt(input) >= 1 && Integer.parseInt(input) <= noteOptions.length) {
+                noteEdited = Integer.parseInt(input) - 1;
+                currentNotePath = noteOptionPaths[noteEdited];
+                clear(false);
+                state = "editingNote";
+            } else {
+                say("Please type a number from 1-" + (noteOptions.length + 1) + "!");
+            }
         } else {
-            say("Please type a number from 1-" + noteOptions.length + 1 + "!");
+            say("Please type a number from 1-" + (noteOptions.length + 1) + "!");
         }
     }
     public void editingNote(Stage primaryStage) {
-        currentNotePath = noteOptionPaths[noteEdited];
+
     }
 
     //Utilities
