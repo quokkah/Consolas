@@ -1,0 +1,25 @@
+ ________  ________  ________   ________  ________  ___       ________  ________
+|\   ____\|\   __  \|\   ___  \|\   ____\|\   __  \|\  \     |\   __  \|\   ____\
+\ \  \___|\ \  \|\  \ \  \\ \  \ \  \___|\ \  \|\  \ \  \    \ \  \|\  \ \  \___|_
+ \ \  \    \ \  \\\  \ \  \\ \  \ \_____  \ \  \\\  \ \  \    \ \   __  \ \_____  \
+  \ \  \____\ \  \\\  \ \  \\ \  \|____|\  \ \  \\\  \ \  \____\ \  \ \  \|____|\  \
+   \ \_______\ \_______\ \__\\ \__\____\_\  \ \_______\ \_______\ \__\ \__\____\_\  \
+    \|_______|\|_______|\|__| \|__|\_________\|_______|\|_______|\|__|\|__|\_________\
+                                  \|_________|                            \|_________|
+                                     by quokkah
+
+
+Type 'help' for commands
+no
+What note do you want to edit?
+[1] dremilSollSichAusloggen.txt
+[2] ifThisDoesntWorkIAmGoingToJumpOffABridge.txt
+[3] myDiary.txt
+[4] -Create New Note-
+[5] -Create New Note-
+[6] -Create New Note-
+[7] -Create New Note-
+[8] -Create New Note-
+[9] Go back
+Tip: In order to stop editing the file, press 'ALT'!
+1

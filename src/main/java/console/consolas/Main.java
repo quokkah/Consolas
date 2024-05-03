@@ -8,8 +8,11 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.text.Font;
+
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,6 +27,7 @@ import static java.nio.file.Files.readAllLines;
 public class Main extends Application { //TODO: Clean up all these variables
     TextArea textArea = new TextArea();
     String preInput = "";
+    String[] preInputSplit;
     String[] inputSplit;
     String[] lines = new String[0];
     String state = "sol";
@@ -34,7 +38,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     String currentPass;
     String unconfirmedUser;
     String unconfirmedPass;
-    String notesFolderPath;
+    String notesFolderPath = "src/main/resources/console/consolas/userData/account";
     String currentNotePath;
     String userFilePath = "src/main/resources/console/consolas/userData/account";
     String[] noteOptions = new String[8];       //TODO: Increase this random number
@@ -70,7 +74,7 @@ public class Main extends Application { //TODO: Clean up all these variables
         primaryStage.show();
         choice("Do you want to Sign up or Log in?", "Sign Up; Log In");
 
-        textArea.setOnKeyPressed(ke -> {
+        textArea.setOnKeyPressed(ke -> {            //TODO: replace else-ifs with switch
             if (Objects.requireNonNull(ke.getCode()) == KeyCode.ENTER) {
                 preInput = textArea.getText();
                 lines = preInput.split("\n");
@@ -83,6 +87,22 @@ public class Main extends Application { //TODO: Clean up all these variables
                 primaryStage.setFullScreen(fullScreen);
             } else if (Objects.requireNonNull(ke.getCode()) == KeyCode.ALT_GRAPH) {
                 System.out.println(accountNumber);
+            } else if (Objects.requireNonNull(ke.getCode()) == KeyCode.ALT) {
+                if (Objects.equals(state, "editingNote")) {
+                    try {
+                        var noteWriter = Files.newBufferedWriter(Paths.get(currentNotePath));
+                        preInputSplit = preInput.split("\n");
+                        for (String preInputSplitLine : preInputSplit) {
+                            if (!Objects.equals(preInputSplitLine, "-back")) {
+                                noteWriter.write(preInputSplitLine + "\n");
+                            }
+                            clear(true);
+                        }
+                        noteWriter.flush();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
             }
         });
     }
@@ -210,7 +230,6 @@ public class Main extends Application { //TODO: Clean up all these variables
                 case "no":
                 case "note":
                 case "notes":
-                    notesFolderPath = "src/main/resources/console/consolas/userData/account";
                     notesFolderPath += accountNumber;
                     notesFolderPath += "/notes";
                     File folder = new File(notesFolderPath);
@@ -238,12 +257,12 @@ public class Main extends Application { //TODO: Clean up all these variables
                     }
                     noteOptionsFused += "; Go back";
                     choice("What note do you want to edit?", noteOptionsFused);
-                    say("Tip: In order to stop editing the file, type '-back'!");
+                    say("Tip: In order to stop editing the file, press 'ALT'!");
                     for (int x = 0; x < noteOptions.length; x++) {
                         noteOptionPaths[x] = notesFolderPath + "/";
                         noteOptionPaths[x] += noteOptions[x];
                     }
-                    notesFolderPath = "";       //remember to reset this!
+                    notesFolderPath = "src/main/resources/console/consolas/userData/account";       //remember to reset this!
                     state = "notesOptions";
                     break;
                 default:
@@ -483,6 +502,13 @@ public class Main extends Application { //TODO: Clean up all these variables
                 noteEdited = Integer.parseInt(input) - 1;
                 currentNotePath = noteOptionPaths[noteEdited];
                 clear(false);
+                try {
+                    for (String line : readAllLines(Paths.get(currentNotePath))) {
+                        say(line);
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 state = "editingNote";
             } else {
                 say("Please type a number from 1-" + (noteOptions.length + 1) + "!");
