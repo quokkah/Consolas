@@ -504,18 +504,27 @@ public class Main extends Application { //TODO: Clean up all these variables
     }
     public void notesOptions(Stage primaryStage) {
         if (input.matches("[0-9]+")) {
-            if (Integer.parseInt(input) >= 1 && Integer.parseInt(input) <= noteOptions.length) {
-                noteEdited = Integer.parseInt(input) - 1;
-                currentNotePath = noteOptionPaths[noteEdited];
-                clear(false);
-                try {
-                    for (String line : readAllLines(Paths.get(currentNotePath))) {
-                        say(line);
+            if (Integer.parseInt(input) >= 1 && Integer.parseInt(input) <= noteOptions.length + 1) {
+                if (Integer.parseInt(input) == 9) {
+                    state = "home";
+                } else {
+                    noteEdited = Integer.parseInt(input) - 1;
+                    currentNotePath = noteOptionPaths[noteEdited];
+                    if (new File(currentNotePath).exists()) {
+                        clear(false);
+                        try {
+                            for (String line : readAllLines(Paths.get(currentNotePath))) {
+                                say(line);
+                            }
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                        state = "editingNote";
+                    } else {
+                        say("Choose a name for the new note:\n(Tip: Exclude .txt)");
+                        state = "newNote";
                     }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
                 }
-                state = "editingNote";
             } else {
                 say("Please type a number from 1-" + (noteOptions.length + 1) + "!");
             }
@@ -525,6 +534,28 @@ public class Main extends Application { //TODO: Clean up all these variables
     }
     public void editingNote(Stage primaryStage) {
 
+    }
+    public void newNote(Stage primaryStage) {
+        notesFolderPath += accountNumber;
+        notesFolderPath += "/notes/";
+        currentNotePath = notesFolderPath += input;
+        currentNotePath += ".txt";
+        File noteFile = new File(currentNotePath);
+        try {
+            noteFile.createNewFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        clear(false);
+        try {
+            for (String line : readAllLines(Paths.get(currentNotePath))) {
+                say(line);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        noteOptions[noteEdited] = input + ".txt";
+        state = "editingNote";
     }
 
     //Utilities
