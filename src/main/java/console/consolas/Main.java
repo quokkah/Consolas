@@ -226,7 +226,7 @@ public class Main extends Application { //TODO: Clean up all these variables
                         }
                     } else {
                         state = "passDefault";
-                        choice("Do you want to view or edit your password?", "View; Change; Go Back");
+                        choice("Do you want to view or edit your password?", "View; Change; Go back");
                     }
                     break;
                 case "cl":
@@ -236,40 +236,14 @@ public class Main extends Application { //TODO: Clean up all these variables
                 case "no":
                 case "note":
                 case "notes":
-                    notesFolderPath += accountNumber;
-                    notesFolderPath += "/notes";
-                    File folder = new File(notesFolderPath);
-                    File[] listOfFiles = folder.listFiles();
-                    if(listOfFiles != null) {
-                        for (int x = 0; x < listOfFiles.length; x++) {
-                            if (listOfFiles[x].isFile()) {
-                                noteOptions[x] = (listOfFiles[x].getName());
-                            }
+                    if (inputSplit.length > 1) {
+                        switch (inputSplit[1]) {
+
                         }
+                    } else {
+                        choice("Do you want to edit or delete a note?", "Edit; Delete; Go back");
+                        state = "noteDefault";
                     }
-                    for (int x = 0; x < noteOptions.length; x++) {
-                        if (Objects.equals(noteOptions[x], null)) {
-                            noteOptions[x] = "-Create New Note-";
-                        }
-                    }
-                    firstNoteOption = true;
-                    noteOptionsFused = "";
-                    for (String option : noteOptions) {
-                        if (!firstNoteOption) {
-                            noteOptionsFused += "; ";
-                        }
-                        noteOptionsFused += option;
-                        firstNoteOption = false;
-                    }
-                    noteOptionsFused += "; Go back";
-                    choice("What note do you want to edit?", noteOptionsFused);
-                    say("Tip: In order to stop editing the file, press 'ALT'!");
-                    for (int x = 0; x < noteOptions.length; x++) {
-                        noteOptionPaths[x] = notesFolderPath + "/";
-                        noteOptionPaths[x] += noteOptions[x];
-                    }
-                    notesFolderPath = "src/main/resources/console/consolas/userData/account";       //remember to reset this!
-                    state = "notesOptions";
                     break;
                 default:
                     say("Unknown Command!");
@@ -502,6 +476,54 @@ public class Main extends Application { //TODO: Clean up all these variables
                 say("Please type a number from 1-2!");
         }
     }
+    public void noteDefault(Stage primaryStage) {
+        switch (input) {
+            case "1":
+                notesFolderPath += accountNumber;
+                notesFolderPath += "/notes";
+                File folder = new File(notesFolderPath);
+                File[] listOfFiles = folder.listFiles();
+                if(listOfFiles != null) {
+                    for (int x = 0; x < listOfFiles.length; x++) {
+                        if (listOfFiles[x].isFile()) {
+                            noteOptions[x] = (listOfFiles[x].getName());
+                        }
+                    }
+                }
+                for (int x = 0; x < noteOptions.length; x++) {
+                    if (Objects.equals(noteOptions[x], null)) {
+                        noteOptions[x] = "-Create New Note-";
+                    }
+                }
+                firstNoteOption = true;
+                noteOptionsFused = "";
+                for (String option : noteOptions) {
+                    if (!firstNoteOption) {
+                        noteOptionsFused += "; ";
+                    }
+                    noteOptionsFused += option;
+                    firstNoteOption = false;
+                }
+                noteOptionsFused += "; Go back";
+                choice("What note do you want to edit?", noteOptionsFused);
+                say("Tip: In order to stop editing the file, press 'ALT'!");
+                for (int x = 0; x < noteOptions.length; x++) {
+                    noteOptionPaths[x] = notesFolderPath + "/";
+                    noteOptionPaths[x] += noteOptions[x];
+                }
+                notesFolderPath = "src/main/resources/console/consolas/userData/account";
+                state = "notesOptions";
+                break;
+            case "2":
+                break;
+            case "3":
+                state = "home";
+                break;
+            default:
+                say("Please type a number from 1-3!");
+
+        }
+    }
     public void notesOptions(Stage primaryStage) {
         if (input.matches("[0-9]+")) {
             if (Integer.parseInt(input) >= 1 && Integer.parseInt(input) <= noteOptions.length + 1) {
@@ -554,8 +576,8 @@ public class Main extends Application { //TODO: Clean up all these variables
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        noteOptions[noteEdited] = input + ".txt";
         state = "editingNote";
+        notesFolderPath = "src/main/resources/console/consolas/userData/account";
     }
 
     //Utilities
