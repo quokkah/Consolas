@@ -9,10 +9,8 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.text.Font;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,7 +25,8 @@ import static java.nio.file.Files.readAllLines;
 public class Main extends Application { //TODO: Clean up all these variables
     TextArea textArea = new TextArea();
     String preInput = "";
-    String[] preInputSplit;
+    String noteContent;
+    String[] noteContentSplit;
     String[] inputSplit;
     String[] lines = new String[0];
     String state = "sol";
@@ -86,23 +85,24 @@ public class Main extends Application { //TODO: Clean up all these variables
                 fullScreen = !fullScreen;
                 primaryStage.setFullScreen(fullScreen);
             } else if (Objects.requireNonNull(ke.getCode()) == KeyCode.ALT_GRAPH) {
-                System.out.println(accountNumber);
+                System.out.println(preInput);
             } else if (Objects.requireNonNull(ke.getCode()) == KeyCode.ALT) {
                 if (Objects.equals(state, "editingNote")) {
                     try {
                         var noteWriter = Files.newBufferedWriter(Paths.get(currentNotePath));
-                        preInputSplit = preInput.split("\n");
-                        for (String preInputSplitLine : preInputSplit) {
-                            if (!Objects.equals(preInputSplitLine, "-back")) {
-                                noteWriter.write(preInputSplitLine + "\n");
+                        noteContent = textArea.getText();
+                        noteContentSplit = noteContent.split("\n");
+                        for (String noteContentSplitLine : noteContentSplit) {
+                            if (!Objects.equals(noteContentSplitLine, "-back")) {
+                                noteWriter.write(noteContentSplitLine + "\n");
                             }
-                            clear(true);
                         }
                         noteWriter.flush();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
                 }
+                clear(true);
             }
         });
     }
