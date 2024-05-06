@@ -477,19 +477,23 @@ public class Main extends Application { //TODO: Clean up all these variables
         }
     }
     public void noteDefault(Stage primaryStage) {
+        notesFolderPath += accountNumber;
+        notesFolderPath += "/notes";
+        File folder = new File(notesFolderPath);
+        File[] listOfFiles = folder.listFiles();
+        if (listOfFiles != null) {
+            for (int x = 0; x < listOfFiles.length; x++) {
+                if (listOfFiles[x].isFile()) {
+                    noteOptions[x] = (listOfFiles[x].getName());
+                }
+            }
+        }
+        for (int x = 0; x < noteOptions.length; x++) {
+            noteOptionPaths[x] = notesFolderPath + "/";
+            noteOptionPaths[x] += noteOptions[x];
+        }
         switch (input) {
             case "1":
-                notesFolderPath += accountNumber;
-                notesFolderPath += "/notes";
-                File folder = new File(notesFolderPath);
-                File[] listOfFiles = folder.listFiles();
-                if(listOfFiles != null) {
-                    for (int x = 0; x < listOfFiles.length; x++) {
-                        if (listOfFiles[x].isFile()) {
-                            noteOptions[x] = (listOfFiles[x].getName());
-                        }
-                    }
-                }
                 for (int x = 0; x < noteOptions.length; x++) {
                     if (Objects.equals(noteOptions[x], null)) {
                         noteOptions[x] = "-Create New Note-";
@@ -507,14 +511,22 @@ public class Main extends Application { //TODO: Clean up all these variables
                 noteOptionsFused += "; Go back";
                 choice("What note do you want to edit?", noteOptionsFused);
                 say("Tip: In order to stop editing the file, press 'ALT'!");
-                for (int x = 0; x < noteOptions.length; x++) {
-                    noteOptionPaths[x] = notesFolderPath + "/";
-                    noteOptionPaths[x] += noteOptions[x];
-                }
                 notesFolderPath = "src/main/resources/console/consolas/userData/account";
                 state = "notesOptions";
                 break;
             case "2":
+                firstNoteOption = true;
+                noteOptionsFused = "";
+                for (String option : noteOptions) {
+                    if (!firstNoteOption) {
+                        noteOptionsFused += "; ";
+                    }
+                    noteOptionsFused += option;
+                    firstNoteOption = false;
+                }
+                noteOptionsFused += "; Go back";
+                choice("What note do you want to delete?", noteOptionsFused);
+                state = "deleteNote";
                 break;
             case "3":
                 state = "home";
@@ -554,8 +566,20 @@ public class Main extends Application { //TODO: Clean up all these variables
             say("Please type a number from 1-" + (noteOptions.length + 1) + "!");
         }
     }
-    public void editingNote(Stage primaryStage) {
-
+    public void editingNote(Stage primaryStage) {}      //TODO: change this to universal method or check if necessary
+    public void deleteNote(Stage primaryStage) {
+        noteEdited = Integer.parseInt(input) - 1;
+        currentNotePath = noteOptionPaths[noteEdited];
+        File deleteNoteFile = new File(currentNotePath);
+        clear(false);
+        state = "home";
+        title();
+        if (deleteNoteFile.delete()) {
+            say("Note successfully deleted!");
+        } else {
+            say("There seems to be a problem with deleting this file!");
+        }
+        notesFolderPath = "src/main/resources/console/consolas/userData/account";
     }
     public void newNote(Stage primaryStage) {
         notesFolderPath += accountNumber;
