@@ -50,6 +50,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     boolean firstNoteOption = true;
     boolean signedIn = false;
     boolean fullScreen = true;         //turn this off when debugging
+    boolean firstNoteLine = true;
     int accountNumber;
     int noteEdited;
     Path userPath = java.nio.file.Paths.get("src/main/resources/console/consolas/accountData/usernames.txt");
@@ -87,15 +88,20 @@ public class Main extends Application { //TODO: Clean up all these variables
             } else if (Objects.requireNonNull(ke.getCode()) == KeyCode.ALT_GRAPH) {
                 System.out.println(preInput);
             } else if (Objects.requireNonNull(ke.getCode()) == KeyCode.ALT) {
+                firstNoteLine = true;
                 if (Objects.equals(state, "editingNote")) {
                     try {
                         var noteWriter = Files.newBufferedWriter(Paths.get(currentNotePath));
                         noteContent = textArea.getText();
                         noteContentSplit = noteContent.split("\n");
                         for (String noteContentSplitLine : noteContentSplit) {
-                            if (!Objects.equals(noteContentSplitLine, "-back")) {
-                                noteWriter.write(noteContentSplitLine + "\n");
+                            if (!firstNoteLine) {
+                                noteWriter.write("\n");
                             }
+                            if (!Objects.equals(noteContentSplitLine, "-back")) {
+                                noteWriter.write(noteContentSplitLine);
+                            }
+                            firstNoteLine = false;
                         }
                         noteWriter.flush();
                     } catch (IOException e) {
