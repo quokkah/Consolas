@@ -1,6 +1,6 @@
 Commands:
 help - Show all available commands
-close - Close the program
+exit - Close the program
 logout - Log out of the program
 fullscreen - Toggles fullscreen (F11 works as well)
 clear - Clear the screen
