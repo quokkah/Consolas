@@ -1,6 +1,8 @@
 package console.consolas;
 
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
@@ -31,6 +33,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     String[] inputSplit;
     String[] lines = new String[0];
     String state = "sol";
+    String savedState;  //Used to remember previous state
     String correctPass;
     String input;
     String usernameInput;
@@ -129,6 +132,14 @@ public class Main extends Application { //TODO: Clean up all these variables
         switch (input) {
             case "-ba":
             case "-back":
+                if (signedIn) {
+                    savedState = "home";
+                    clear(true);
+                } else {
+                    savedState = "sol";
+                    clear(false);
+                    choice("Do you want to Sign up or Log in?", "Sign Up; Log In");
+                }
                 state = "none";
                 break;
         }
@@ -234,7 +245,7 @@ public class Main extends Application { //TODO: Clean up all these variables
                     break;
                 case "cl":
                 case "clear":
-                    clear(true);            //TODO: Make clear command work ALWAYS!!!!!
+                    clear(true);
                     break;
                 case "no":
                 case "note":
@@ -339,13 +350,7 @@ public class Main extends Application { //TODO: Clean up all these variables
         }
     }       //SignUp or LogIn
     public void none(Stage primaryStage) {
-        if (signedIn) {
-            clear(true);
-        } else {
-            clear(false);
-            choice("Do you want to Sign up or Log in?", "Sign Up; Log In");
-            state = "sol";
-        }
+        state = savedState;
     }
 
     //Commands (States)
