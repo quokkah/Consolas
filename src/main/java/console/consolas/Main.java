@@ -52,6 +52,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     boolean signedIn = false;
     boolean fullScreen = true;         //turn this off when debugging
     boolean firstNoteLine = true;
+    boolean notesExist = false;
     int accountNumber;
     int noteEdited;
     Path userPath = java.nio.file.Paths.get("src/main/resources/console/consolas/accountData/usernames.txt");
@@ -89,8 +90,8 @@ public class Main extends Application { //TODO: Clean up all these variables
             } else if (Objects.requireNonNull(ke.getCode()) == KeyCode.ALT_GRAPH) {
                 System.out.println(preInput);
             } else if (Objects.requireNonNull(ke.getCode()) == KeyCode.ALT) {
-                firstNoteLine = true;
                 if (Objects.equals(state, "editingNote")) {
+                    firstNoteLine = true;
                     try {
                         var noteWriter = Files.newBufferedWriter(Paths.get(currentNotePath));
                         noteContent = textArea.getText();
@@ -108,8 +109,8 @@ public class Main extends Application { //TODO: Clean up all these variables
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
+                    clear(true);
                 }
-                clear(true);
             }
         });
     }
@@ -517,18 +518,31 @@ public class Main extends Application { //TODO: Clean up all these variables
                 state = "notesOptions";
                 break;
             case "2":
-                firstNoteOption = true;
-                noteOptionsFused = "";
-                for (String option : noteOptions) {
-                    if (!firstNoteOption) {
-                        noteOptionsFused += "; ";
+                for (int x = 0; x < noteOptions.length; x++) {
+                    if (Objects.equals(noteOptions[x], null)) {
+                        noteOptions[x] = "-Empty Slot-";
+                    } else {
+                        notesExist = true;
                     }
-                    noteOptionsFused += option;
-                    firstNoteOption = false;
                 }
-                noteOptionsFused += "; Go back";
-                choice("What note do you want to delete?", noteOptionsFused);
-                state = "deleteNote";
+                if (notesExist) {
+                    firstNoteOption = true;
+                    noteOptionsFused = "";
+                    for (String option : noteOptions) {
+                        if (!firstNoteOption) {
+                            noteOptionsFused += "; ";
+                        }
+                        noteOptionsFused += option;
+                        firstNoteOption = false;
+                    }
+                    noteOptionsFused += "; Go back";
+                    choice("What note do you want to delete?", noteOptionsFused);
+                    state = "deleteNote";
+                    notesExist = false;
+                } else {
+                    say("No notes have been found");
+                    state = "home";
+                }
                 break;
             case "3":
                 state = "home";
@@ -628,7 +642,6 @@ public class Main extends Application { //TODO: Clean up all these variables
         }
     }
     void title() {
-        say("Benner ist ein renner");
         try {
             for (String line : Files.readAllLines(pathTitle)) {
                 say(line);
