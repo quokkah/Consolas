@@ -1,10 +1,9 @@
 package console.consolas;
 
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
@@ -78,6 +77,9 @@ public class Main extends Application { //TODO: Clean up all these variables
         primaryStage.setFullScreen(fullScreen);
         primaryStage.setFullScreenExitHint("");
         primaryStage.show();
+        textArea.setWrapText(true);
+        ScrollBar scrollBar = (ScrollBar)textArea.lookup(".scroll-bar:vertical");
+        scrollBar.setDisable(true);
         choice("Do you want to Sign up or Log in?", "Sign Up; Log In");
 
         textArea.setOnKeyPressed(ke -> {            //TODO: replace else-ifs with switch
