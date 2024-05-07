@@ -53,6 +53,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     boolean fullScreen = true;         //turn this off when debugging
     boolean firstNoteLine = true;
     boolean notesExist = false;
+    boolean noteNameUnavailable = false;
     int accountNumber;
     int noteEdited;
     Path userPath = java.nio.file.Paths.get("src/main/resources/console/consolas/accountData/usernames.txt");
@@ -480,6 +481,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     }
     public void noteDefault(Stage primaryStage) {
         Arrays.fill(noteOptions, null);
+        notesFolderPath = "src/main/resources/console/consolas/userData/account";
         notesFolderPath += accountNumber;
         notesFolderPath += "/notes";
         File folder = new File(notesFolderPath);
@@ -494,6 +496,13 @@ public class Main extends Application { //TODO: Clean up all these variables
         for (int x = 0; x < noteOptions.length; x++) {
             noteOptionPaths[x] = notesFolderPath + "/";
             noteOptionPaths[x] += noteOptions[x];
+        }
+        for (int x = 0; x < noteOptions.length; x++) {
+            if (Objects.equals(noteOptions[x], null)) {
+                noteOptions[x] = "-Empty Slot-";
+            } else {
+                notesExist = true;
+            }
         }
         switch (input) {
             case "1":
@@ -518,13 +527,6 @@ public class Main extends Application { //TODO: Clean up all these variables
                 state = "notesOptions";
                 break;
             case "2":
-                for (int x = 0; x < noteOptions.length; x++) {
-                    if (Objects.equals(noteOptions[x], null)) {
-                        noteOptions[x] = "-Empty Slot-";
-                    } else {
-                        notesExist = true;
-                    }
-                }
                 if (notesExist) {
                     firstNoteOption = true;
                     noteOptionsFused = "";
@@ -584,40 +586,73 @@ public class Main extends Application { //TODO: Clean up all these variables
     }
     public void editingNote(Stage primaryStage) {}      //TODO: change this to universal method or check if necessary
     public void deleteNote(Stage primaryStage) {
-        noteEdited = Integer.parseInt(input) - 1;
-        currentNotePath = noteOptionPaths[noteEdited];
-        File deleteNoteFile = new File(currentNotePath);
-        clear(false);
-        state = "home";
-        title();
-        if (deleteNoteFile.delete()) {
-            say("Note successfully deleted!");
+        if (input.matches("[0-9]+")) {
+            if (Integer.parseInt(input) >= 1 && Integer.parseInt(input) <= noteOptions.length + 1) {
+                if (Integer.parseInt(input) == 9) {
+                    state = "home";
+                } else {
+                    noteEdited = Integer.parseInt(input) - 1;
+                    currentNotePath = noteOptionPaths[noteEdited];
+                    File deleteNoteFile = new File(currentNotePath);
+                    clear(false);
+                    state = "home";
+                    title();
+                    if (deleteNoteFile.delete()) {
+                        say("Note successfully deleted!");
+                    } else {
+                        say("You cannot delete non-existent notes!");
+                    }
+                    notesFolderPath = "src/main/resources/console/consolas/userData/account";
+                }
+            } else {
+                say("Please type a number from 1-" + (noteOptions.length + 1) + "!");
+            }
         } else {
-            say("There seems to be a problem with deleting this file!");
+            say("Please type a number from 1-" + (noteOptions.length + 1) + "!");
         }
-        notesFolderPath = "src/main/resources/console/consolas/userData/account";
     }
     public void newNote(Stage primaryStage) {
-        notesFolderPath += accountNumber;
-        notesFolderPath += "/notes/";
-        currentNotePath = notesFolderPath += input;
-        currentNotePath += ".txt";
-        File noteFile = new File(currentNotePath);
-        try {
-            noteFile.createNewFile();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        clear(false);
-        try {
-            for (String line : readAllLines(Paths.get(currentNotePath))) {
-                say(line);
+        noteNameUnavailable = false;
+        if (!Objects.equals(input, "(Tip: Exclude .txt)") && !Objects.equals(input, "(Tip: Exclude .txt)")) {
+            if (!input.contains(" ")) {
+                for (String noteOption : noteOptions) {
+                    if (Objects.equals(input + ".txt", noteOption)) {
+                        noteNameUnavailable = true;
+                        break;
+                    }
+                }
+                if (noteNameUnavailable) {
+                    say("This name is already in use! Choose a different one:");
+                } else {
+                    notesFolderPath += accountNumber;
+                    notesFolderPath += "/notes/";
+                    currentNotePath = notesFolderPath += input;
+                    currentNotePath += ".txt";
+                    File noteFile = new File(currentNotePath);
+                    try {
+                        noteFile.createNewFile();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    clear(false);
+                    try {
+                        for (String line : readAllLines(Paths.get(currentNotePath))) {
+                            say(line);
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    state = "editingNote";
+                    notesFolderPath = "src/main/resources/console/consolas/userData/account";
+                }
+            } else {
+                say("Name cannot contain spaces!");
+                say("Choose a name for the new note:\n(Tip: Exclude .txt)");
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } else {
+            say("Name cannot be empty!");
+            say("Choose a name for the new note:\n(Tip: Exclude .txt)");
         }
-        state = "editingNote";
-        notesFolderPath = "src/main/resources/console/consolas/userData/account";
     }
 
     //Utilities
