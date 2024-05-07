@@ -239,9 +239,78 @@ public class Main extends Application { //TODO: Clean up all these variables
                 case "no":
                 case "note":
                 case "notes":
+                    Arrays.fill(noteOptions, null);
+                    notesFolderPath = "src/main/resources/console/consolas/userData/account";
+                    notesFolderPath += accountNumber;
+                    notesFolderPath += "/notes";
+                    File folder = new File(notesFolderPath);
+                    File[] listOfFiles = folder.listFiles();
+                    if (listOfFiles != null) {
+                        for (int x = 0; x < listOfFiles.length; x++) {
+                            if (listOfFiles[x].isFile()) {
+                                noteOptions[x] = (listOfFiles[x].getName());
+                            }
+                        }
+                    }
+                    for (int x = 0; x < noteOptions.length; x++) {
+                        noteOptionPaths[x] = notesFolderPath + "/";
+                        noteOptionPaths[x] += noteOptions[x];
+                    }
+                    for (int x = 0; x < noteOptions.length; x++) {
+                        if (Objects.equals(noteOptions[x], null)) {
+                            noteOptions[x] = "-Empty Slot-";
+                        } else {
+                            notesExist = true;
+                        }
+                    }
                     if (inputSplit.length > 1) {
                         switch (inputSplit[1]) {
-
+                            case "ed":
+                            case "edit":
+                                for (int x = 0; x < noteOptions.length; x++) {
+                                    if (Objects.equals(noteOptions[x], null)) {
+                                        noteOptions[x] = "-Create New Note-";
+                                    }
+                                }
+                                firstNoteOption = true;
+                                noteOptionsFused = "";
+                                for (String option : noteOptions) {
+                                    if (!firstNoteOption) {
+                                        noteOptionsFused += "; ";
+                                    }
+                                    noteOptionsFused += option;
+                                    firstNoteOption = false;
+                                }
+                                noteOptionsFused += "; Go back";
+                                choice("What note do you want to edit?", noteOptionsFused);
+                                say("Tip: In order to stop editing the file, press 'ALT'!");
+                                notesFolderPath = "src/main/resources/console/consolas/userData/account";
+                                state = "notesOptions";
+                                break;
+                            case "de":
+                            case "del":
+                            case "delete":
+                                if (notesExist) {
+                                    firstNoteOption = true;
+                                    noteOptionsFused = "";
+                                    for (String option : noteOptions) {
+                                        if (!firstNoteOption) {
+                                            noteOptionsFused += "; ";
+                                        }
+                                        noteOptionsFused += option;
+                                        firstNoteOption = false;
+                                    }
+                                    noteOptionsFused += "; Go back";
+                                    choice("What note do you want to delete?", noteOptionsFused);
+                                    state = "deleteNote";
+                                    notesExist = false;
+                                } else {
+                                    say("No notes have been found");
+                                    state = "home";
+                                }
+                                break;
+                            default:
+                                say("Unknown Command!");
                         }
                     } else {
                         choice("Do you want to edit or delete a note?", "Edit; Delete; Go back");
@@ -480,30 +549,6 @@ public class Main extends Application { //TODO: Clean up all these variables
         }
     }
     public void noteDefault(Stage primaryStage) {
-        Arrays.fill(noteOptions, null);
-        notesFolderPath = "src/main/resources/console/consolas/userData/account";
-        notesFolderPath += accountNumber;
-        notesFolderPath += "/notes";
-        File folder = new File(notesFolderPath);
-        File[] listOfFiles = folder.listFiles();
-        if (listOfFiles != null) {
-            for (int x = 0; x < listOfFiles.length; x++) {
-                if (listOfFiles[x].isFile()) {
-                    noteOptions[x] = (listOfFiles[x].getName());
-                }
-            }
-        }
-        for (int x = 0; x < noteOptions.length; x++) {
-            noteOptionPaths[x] = notesFolderPath + "/";
-            noteOptionPaths[x] += noteOptions[x];
-        }
-        for (int x = 0; x < noteOptions.length; x++) {
-            if (Objects.equals(noteOptions[x], null)) {
-                noteOptions[x] = "-Empty Slot-";
-            } else {
-                notesExist = true;
-            }
-        }
         switch (input) {
             case "1":
                 for (int x = 0; x < noteOptions.length; x++) {
@@ -551,7 +596,6 @@ public class Main extends Application { //TODO: Clean up all these variables
                 break;
             default:
                 say("Please type a number from 1-3!");
-
         }
     }
     public void notesOptions(Stage primaryStage) {
