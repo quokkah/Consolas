@@ -445,6 +445,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     }
     public void logInPass(Stage primaryStage) {
         if (Objects.equals(input, correctPass)) {
+            createFiles();
             state = "home";
             signedIn = true;
             clear(true);
@@ -559,7 +560,7 @@ public class Main extends Application { //TODO: Clean up all these variables
         switch (input) {
             case "1":
                 for (int x = 0; x < noteOptions.length; x++) {
-                    if (Objects.equals(noteOptions[x], null)) {
+                    if (Objects.equals(noteOptions[x], "-Empty Slot-")) {
                         noteOptions[x] = "-Create New Note-";
                     }
                 }
