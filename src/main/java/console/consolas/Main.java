@@ -341,11 +341,11 @@ public class Main extends Application { //TODO: Clean up all these variables
         switch (input) {
             case "1":
                 state = "signUpUs";
-                say("Username:");
+                say("Username: ");
                 break;
             case "2":
                 state = "logInUs";
-                say("Username:");
+                say("Username: ");
                 break;
             default:
                 say("Please type a number from 1-2!");
@@ -387,10 +387,10 @@ public class Main extends Application { //TODO: Clean up all these variables
         if (dataReqs(input, "Username")) {
             state = "signUpPass";
             usernameInput = input;
-            say("Password:");
+            say("Password: ");
         } else {
             usernameInUse = false;
-            say("Username:");
+            say("Username: ");
         }
     }
     public void signUpPass(Stage primaryStage) {
@@ -414,8 +414,6 @@ public class Main extends Application { //TODO: Clean up all these variables
                 throw new RuntimeException(e);
             }
             createFiles();
-        } else {
-            signUpPass(primaryStage);
         }
     }
     public void logInUs(Stage primaryStage) {
@@ -433,11 +431,11 @@ public class Main extends Application { //TODO: Clean up all these variables
                 try (Stream<String> lines = Files.lines(passPath)) {
                     correctPass = lines.skip(accountNumber - 1).findFirst().get();
                     state = "logInPass";
-                    say("Password:");
+                    say("Password: ");
                 }
             } else {
                 say("Username not found");
-                say("Username:");
+                say("Username: ");
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -451,7 +449,7 @@ public class Main extends Application { //TODO: Clean up all these variables
             clear(true);
         } else {
             say("Wrong password");
-            say("Password:");
+            say("Password: ");
         }
     }
     public void userDefault(Stage primaryStage) {
@@ -741,11 +739,8 @@ public class Main extends Application { //TODO: Clean up all these variables
         if (input.startsWith("-")) {
             say(passOrUser + " cannot start with '-'");
             return false;
-        } else if (Objects.equals(input, "Username:")) {
-            say(passOrUser + " cannot be empty or be called 'Username:'");
-            return false;
         } else if (input.contains(" ")) {
-            say(passOrUser + " cannot contain spaces");
+            say(passOrUser + " cannot contain spaces or be empty");
             return false;
         } else {
             if (Objects.equals(passOrUser, "Password")) {
