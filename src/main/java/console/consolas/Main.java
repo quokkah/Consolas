@@ -31,6 +31,11 @@ public class Main extends Application { //TODO: Clean up all these variables
     String[] noteContentSplit;
     String[] inputSplit;
     String[] lines = new String[0];
+    int maximalSettings = 32;
+    String[] themeSettings = new String[maximalSettings];
+    String[] fontSettings = new String[maximalSettings];
+    String[] accountSettings = new String[maximalSettings];
+    String settingsFused;
     String state = "sol";
     String savedState;  //Used to remember previous state
     String correctPass;
@@ -42,6 +47,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     String unconfirmedPass;
     String notesFolderPath = "src/main/resources/console/consolas/userData/account";
     String currentNotePath;
+    String settingsPath = notesFolderPath;
     String userFilePath = "src/main/resources/console/consolas/userData/account";
     String[] noteOptions = new String[8];       //TODO: Increase this random number
     String[] noteOptionPaths = new String [noteOptions.length];
@@ -56,8 +62,10 @@ public class Main extends Application { //TODO: Clean up all these variables
     boolean firstNoteLine = true;
     boolean notesExist = false;
     boolean noteNameUnavailable = false;
+    boolean firstSetting;
     int accountNumber;
     int noteEdited;
+    int settingsCounter;
     Path userPath = java.nio.file.Paths.get("src/main/resources/console/consolas/accountData/usernames.txt");
     Path passPath = java.nio.file.Paths.get("src/main/resources/console/consolas/accountData/passwords.txt");
 
@@ -122,9 +130,36 @@ public class Main extends Application { //TODO: Clean up all these variables
     }
     public void createFiles() {
         userFilePath += accountNumber;
+        settingsPath += accountNumber;
         new File(userFilePath).mkdirs();
         userFilePath += "/notes";
+        settingsPath += "/settings";
         new File(userFilePath).mkdirs();
+        new File(settingsPath).mkdirs();
+        File themesSettingFile = new File(settingsPath + "/themes.txt");
+        File fontSettingFile = new File(settingsPath + "/font.txt");
+        File accountSettingFile = new File(settingsPath + "/account.txt");
+        try {
+            themesSettingFile.createNewFile();
+            fontSettingFile.createNewFile();
+            accountSettingFile.createNewFile();
+            for (String line : readAllLines(Paths.get(settingsPath + "/themes.txt"))) {
+                themeSettings[settingsCounter] = line;
+                settingsCounter++;
+            }
+            settingsCounter = 0;
+            for (String line : readAllLines(Paths.get(settingsPath + "/font.txt"))) {
+                fontSettings[settingsCounter] = line;
+                settingsCounter++;
+            }
+            settingsCounter = 0;
+            for (String line : readAllLines(Paths.get(settingsPath + "/account.txt"))) {
+                accountSettings[settingsCounter] = line;
+                settingsCounter++;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         userFilePath = "src/main/resources/console/consolas/userData/account";
         state = "home";
         signedIn = true;
@@ -328,6 +363,15 @@ public class Main extends Application { //TODO: Clean up all these variables
                     } else {
                         choice("Do you want to edit or delete a note?", "Edit; Delete; Go back");
                         state = "noteDefault";
+                    }
+                    break;
+                case "se":
+                case "settings":
+                    if (inputSplit.length > 1) {
+
+                    } else {
+                        choice("What category do you want to view?", "Themes (WIP); Font; Account");
+                        state = "settingsDefault";
                     }
                     break;
                 default:
@@ -704,6 +748,24 @@ public class Main extends Application { //TODO: Clean up all these variables
             say("Choose a name for the new note:\n(Tip: Exclude .txt)");
         }
     }
+    public void settingsDefault(Stage primaryStage) {
+        settingsFused = "";
+        firstSetting = true;
+        switch (input) {
+            case "1":
+                listSettings(themeSettings);
+                break;
+            case "2":
+                listSettings(fontSettings);
+                break;
+            case "3":
+                listSettings(accountSettings);
+                break;
+            default:
+                say("Not a valid category!");
+                choice("What category do you want to view?", "Themes (WIP); Font; Account");
+        }
+    }
 
     //Utilities
     void say(String text) {
@@ -760,6 +822,24 @@ public class Main extends Application { //TODO: Clean up all these variables
                 }
             }
         }
+    }
+    void listSettings(String[] settingCategory) {
+        for (int x = 0; x < maximalSettings; x++) {
+            if (!firstSetting) {
+                if (x % 2 == 0) {
+                    settingsFused += "; ";
+                }
+            }
+            if (!Objects.equals(settingCategory[x], null)) {
+                settingsFused += settingCategory[x];
+                if (x % 2 == 0) {
+                    settingsFused += " ";
+                }
+            }
+            firstSetting = false;
+        }
+        settingsFused += "; Go back";
+        choice("What do you want to edit?", settingsFused);
     }
 }
 
