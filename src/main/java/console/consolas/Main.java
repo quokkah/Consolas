@@ -52,6 +52,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     String[] noteOptions = new String[8];       //TODO: Increase this random number
     String[] noteOptionPaths = new String [noteOptions.length];
     String noteOptionsFused = "";
+    String currentEditedSetting;
     Path pathCommands = Paths.get("src/main/resources/console/consolas/commands.txt");
     Path pathTitle = Paths.get("src/main/resources/console/consolas/title.txt");
     boolean usernameInUse = false;
@@ -754,16 +755,34 @@ public class Main extends Application { //TODO: Clean up all these variables
         switch (input) {
             case "1":
                 listSettings(themeSettings);
+                currentEditedSetting = "theme";
+                state = "editSettings";
                 break;
             case "2":
                 listSettings(fontSettings);
+                currentEditedSetting = "font";
+                state = "editSettings";
                 break;
             case "3":
                 listSettings(accountSettings);
+                currentEditedSetting = "account";
+                state = "editSettings";
                 break;
             default:
                 say("Not a valid category!");
                 choice("What category do you want to view?", "Themes (WIP); Font; Account");
+        }
+    }
+    public void editSettings(Stage primaryStage) {
+        switch (currentEditedSetting) {
+            case "theme":
+                break;
+            case "font":
+                break;
+            case "account":
+                break;
+            default:
+                System.out.println("Invalid Setting");
         }
     }
 
