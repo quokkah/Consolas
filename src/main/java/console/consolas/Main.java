@@ -827,7 +827,9 @@ public class Main extends Application { //TODO: Clean up all these variables
         for (int x = 0; x < maximalSettings; x++) {
             if (!firstSetting) {
                 if (x % 2 == 0) {
-                    settingsFused += "; ";
+                    if (!Objects.equals(settingCategory[x], null)) {
+                        settingsFused += "; ";
+                    }
                 }
             }
             if (!Objects.equals(settingCategory[x], null)) {
