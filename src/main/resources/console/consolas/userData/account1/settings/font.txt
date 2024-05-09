@@ -1,4 +1,4 @@
 Font Size:
 20
 Font Type:
-CONSOLA
+CONSOLA.TFF

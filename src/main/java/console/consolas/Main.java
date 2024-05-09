@@ -35,6 +35,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     String[] themeSettings = new String[maximalSettings];
     String[] fontSettings = new String[maximalSettings];
     String[] accountSettings = new String[maximalSettings];
+    String[] fonts;
     String settingsFused;
     String state = "sol";
     String savedState;  //Used to remember previous state
@@ -49,10 +50,13 @@ public class Main extends Application { //TODO: Clean up all these variables
     String currentNotePath;
     String settingsPath = notesFolderPath;
     String userFilePath = "src/main/resources/console/consolas/userData/account";
-    String[] noteOptions = new String[8];       //TODO: Increase this random number
+    String[] noteOptions = new String[8];
     String[] noteOptionPaths = new String [noteOptions.length];
     String noteOptionsFused = "";
     String currentEditedSetting;
+    String inputTypeRequired;
+    String inputTypeGiven;
+    String fontsFused = "";
     Path pathCommands = Paths.get("src/main/resources/console/consolas/commands.txt");
     Path pathTitle = Paths.get("src/main/resources/console/consolas/title.txt");
     boolean usernameInUse = false;
@@ -67,6 +71,8 @@ public class Main extends Application { //TODO: Clean up all these variables
     int accountNumber;
     int noteEdited;
     int settingsCounter;
+    int settingSelected;
+    int settingsAmount;
     Path userPath = java.nio.file.Paths.get("src/main/resources/console/consolas/accountData/usernames.txt");
     Path passPath = java.nio.file.Paths.get("src/main/resources/console/consolas/accountData/passwords.txt");
 
@@ -89,6 +95,7 @@ public class Main extends Application { //TODO: Clean up all these variables
         textArea.setWrapText(true);
         ScrollBar scrollBar = (ScrollBar)textArea.lookup(".scroll-bar:vertical");
         scrollBar.setDisable(true);
+        System.out.println("Running on JRE Version: " + System.getProperty("java.version"));
         choice("Do you want to Sign up or Log in?", "Sign Up; Log In");
 
         textArea.setOnKeyPressed(ke -> {            //TODO: replace else-ifs with switch
@@ -162,6 +169,19 @@ public class Main extends Application { //TODO: Clean up all these variables
             throw new RuntimeException(e);
         }
         userFilePath = "src/main/resources/console/consolas/userData/account";
+        File fontFolder = new File("src/main/resources/console/consolas/fonts");
+        File[] listOfFonts = fontFolder.listFiles();
+        if (listOfFonts != null) {
+            fonts = new String[listOfFonts.length];
+            for (int x = 0; x < listOfFonts.length; x++) {
+                if (listOfFonts[x].isFile()) {
+                    fonts[x] = (listOfFonts[x].getName());
+                    fontsFused += (listOfFonts[x].getName());
+                    fontsFused += "; ";
+                }
+            }
+            fontsFused += "Go back";
+        }
         state = "home";
         signedIn = true;
         clear(true);
@@ -292,12 +312,12 @@ public class Main extends Application { //TODO: Clean up all these variables
                     notesFolderPath = "src/main/resources/console/consolas/userData/account";
                     notesFolderPath += accountNumber;
                     notesFolderPath += "/notes";
-                    File folder = new File(notesFolderPath);
-                    File[] listOfFiles = folder.listFiles();
-                    if (listOfFiles != null) {
-                        for (int x = 0; x < listOfFiles.length; x++) {
-                            if (listOfFiles[x].isFile()) {
-                                noteOptions[x] = (listOfFiles[x].getName());
+                    File notesFolder = new File(notesFolderPath);
+                    File[] listOfNotes = notesFolder.listFiles();
+                    if (listOfNotes != null) {
+                        for (int x = 0; x < listOfNotes.length; x++) {
+                            if (listOfNotes[x].isFile()) {
+                                noteOptions[x] = (listOfNotes[x].getName());
                             }
                         }
                     }
@@ -774,15 +794,65 @@ public class Main extends Application { //TODO: Clean up all these variables
         }
     }
     public void editSettings(Stage primaryStage) {
-        switch (currentEditedSetting) {
-            case "theme":
-                break;
-            case "font":
-                break;
-            case "account":
-                break;
-            default:
-                System.out.println("Invalid Setting");
+        if (input.matches("[0-9]+")) {
+        settingSelected = (Integer.parseInt(input) * 2) - 1;
+            switch (currentEditedSetting) {
+                case "theme":
+                    say("The current value is: " + themeSettings[settingSelected]);
+                    break;
+                case "font":
+                    say("The current value is: " + fontSettings[settingSelected]);
+                        switch (input) {
+                            case "1":
+                                say("Enter new Font Size:");
+                                inputTypeRequired = "int";
+                                state = "settingsValue";
+                                break;
+                            case "2":
+                                choice("Select a font:", fontsFused);
+                                inputTypeRequired = "int";
+                                state = "settingsValue";
+                                break;
+                            case "3":
+                                state = "home";
+                                break;
+                            default:
+                                say("Please type a number from 1-" + (settingsAmount + 1) + "!");
+                        }
+                    break;
+                case "account":
+                    say("The current value is: " + accountSettings[settingSelected]);
+                    break;
+                default:
+                    System.out.println("Invalid Setting");
+            }
+        } else {
+            say("Please type a number from 1-" + (settingsAmount + 1) + "!");
+        }
+    }
+    public void settingsValue(Stage primaryStage) {
+        if (input.matches("[0-9]+")) {
+            inputTypeGiven = "int";
+        } else {
+            inputTypeRequired = "String";
+        }
+        if (Objects.equals(inputTypeRequired, inputTypeGiven)) {
+            switch (currentEditedSetting) {
+                case "theme":
+                    break;
+                case "font":
+                    break;
+                case "account":
+                    break;
+                default:
+                    System.out.println("Invalid Setting");
+            }
+        } else {
+            if (Objects.equals(inputTypeRequired, "int")) {
+                say("Please enter a number!");
+            } else {
+                say("Please enter text!");      //<- This code makes no sense every input is text wtf is even happening here
+            }
         }
     }
 
@@ -843,11 +913,13 @@ public class Main extends Application { //TODO: Clean up all these variables
         }
     }
     void listSettings(String[] settingCategory) {
+        settingsAmount = 1;
         for (int x = 0; x < maximalSettings; x++) {
             if (!firstSetting) {
                 if (x % 2 == 0) {
                     if (!Objects.equals(settingCategory[x], null)) {
                         settingsFused += "; ";
+                        settingsAmount ++;
                     }
                 }
             }
