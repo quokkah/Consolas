@@ -56,6 +56,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     String currentEditedSetting;
     String newSettingValue;
     String fontsFused = "";
+    String oldSetting;
     Path pathCommands = Paths.get("src/main/resources/console/consolas/commands.txt");
     Path pathTitle = Paths.get("src/main/resources/console/consolas/title.txt");
     boolean usernameInUse = false;
@@ -209,7 +210,7 @@ public class Main extends Application { //TODO: Clean up all these variables
             Method method = this.getClass().getMethod(state, Stage.class);
             method.invoke(this, primaryStage);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            System.out.println("Unknown State!");
+            System.out.println("ERROR: If I see this error message again I am going to jump off a bridge");
         }
     }
 
@@ -802,30 +803,36 @@ public class Main extends Application { //TODO: Clean up all these variables
         settingSelected = (Integer.parseInt(input) * 2) - 1;
             switch (currentEditedSetting) {
                 case "theme":
-                    say("The current value is: " + themeSettings[settingSelected]);
+                    if (!Objects.equals(input, "1")) {      //Remember to change this value when adding settings!
+                        say("The current value is: " + themeSettings[settingSelected]);
+                    }
                     break;
                 case "font":
-                    say("The current value is: " + fontSettings[settingSelected]);
-                        switch (input) {
-                            case "1":
-                                say("Enter new Font Size:");
-                                intIsRequired = true;
-                                state = "settingsValue";
-                                break;
-                            case "2":
-                                choice("Select a font:", fontsFused);
-                                intIsRequired = true;
-                                state = "settingsValue";
-                                break;
-                            case "3":
-                                state = "home";
-                                break;
-                            default:
-                                say("Please type a number from 1-" + (settingsAmount + 1) + "!");
-                        }
+                    if (!Objects.equals(input, "3")) {      //Remember to change this value when adding settings!
+                        say("The current value is: " + fontSettings[settingSelected]);
+                    }
+                    switch (input) {
+                        case "1":
+                            say("Enter new Font Size:");
+                            intIsRequired = true;
+                            state = "settingsValue";
+                            break;
+                        case "2":
+                            choice("Select a font:", fontsFused);
+                            intIsRequired = true;
+                            state = "settingsValue";
+                            break;
+                        case "3":
+                            state = "home";
+                            break;
+                        default:
+                            say("Please type a number from 1-" + (settingsAmount + 1) + "!");
+                    }
                     break;
                 case "account":
-                    say("The current value is: " + accountSettings[settingSelected]);
+                    if (!Objects.equals(input, "1")) {      //Remember to change this value when adding settings!
+                        say("The current value is: " + accountSettings[settingSelected]);
+                    }
                     break;
                 default:
                     System.out.println("Invalid Setting");
@@ -839,39 +846,74 @@ public class Main extends Application { //TODO: Clean up all these variables
         if (inputIsInt == intIsRequired || inputIsInt) {
             switch (currentEditedSetting) {
                 case "theme":
+                    oldSetting = themeSettings[settingSelected];
                     switch (settingSelected) {
 
                     }
-                    writeSettings("themes");
                     break;
                 case "font":
+                    oldSetting = fontSettings[settingSelected];
                     switch (settingSelected) {
                         case 1:
+                            fontSettings[1] = input;
+                            newSettingValue = fontSettings[1];
+                            refreshFont();
                             break;
                         case 3:
                             if (Integer.parseInt(input) > fonts.length + 1) {
                                 say("Please type a number from 1-" + (fonts.length - 1) + "!");
                                 return;
                             } else {
-                                Font font = Font.loadFont(("file:src/main/resources/console/consolas/fonts/" + fonts[Integer.parseInt(input) - 1]), Integer.parseInt(fontSettings[1]));
-                                textArea.setFont(font);
-                                newSettingValue = fonts[Integer.parseInt(input) - 1];
+                                fontSettings[3] = fonts[Integer.parseInt(input) - 1];
+                                newSettingValue = fontSettings[3];
+                                refreshFont();
                             }
                             break;
                     }
-                    writeSettings("font");
+                    choice(("Do you want to keep this change? (" + fontSettings[settingSelected - 1] + " " + fontSettings[settingSelected] + ")"), "Yes, keep the change; No, choose a different value; No, go back");
                     break;
                 case "account":
+                    oldSetting = accountSettings[settingSelected];
                     switch (settingSelected) {
 
                     }
-                    writeSettings("account");
                     break;
                 default:
                     System.out.println("Invalid Setting");
             }
         } else {
             say("Please enter a number!");
+        }
+        state = "confirmSettings";
+    }
+    public void confirmSettings(Stage primaryStage) {
+        switch (input) {
+            case "1":
+                writeSettings(currentEditedSetting);
+                state = "home";
+                break;
+            case "2":
+                input = String.valueOf(((settingSelected + 1) / 2));
+                editSettings(primaryStage);
+                break;
+            case "3":
+                switch (currentEditedSetting) {
+                    case "theme":
+                        themeSettings[settingSelected] = oldSetting;
+                        break;
+                    case "font":
+                        fontSettings[settingSelected] = oldSetting;
+                        break;
+                    case "account":
+                        accountSettings[settingSelected] = oldSetting;
+                        break;
+                }
+                refreshFont();
+                say("Old setting has been restored!");
+                state = "home";
+                break;
+            default:
+                say("Please type a number from 1-3!");
         }
     }
 
@@ -955,7 +997,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     }
     void writeSettings(String settingCategory) {
         switch (settingCategory) {
-            case "themes":
+            case "theme":
                 List<String> linesThemeSetting;
                 themeSettings[settingSelected] = newSettingValue;
                 try {
