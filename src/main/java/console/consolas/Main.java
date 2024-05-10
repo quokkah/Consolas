@@ -54,8 +54,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     String[] noteOptionPaths = new String [noteOptions.length];
     String noteOptionsFused = "";
     String currentEditedSetting;
-    String inputTypeRequired;
-    String inputTypeGiven;
+    String newSettingValue;
     String fontsFused = "";
     Path pathCommands = Paths.get("src/main/resources/console/consolas/commands.txt");
     Path pathTitle = Paths.get("src/main/resources/console/consolas/title.txt");
@@ -68,6 +67,8 @@ public class Main extends Application { //TODO: Clean up all these variables
     boolean notesExist = false;
     boolean noteNameUnavailable = false;
     boolean firstSetting;
+    boolean inputIsInt;
+    boolean intIsRequired;
     int accountNumber;
     int noteEdited;
     int settingsCounter;
@@ -110,7 +111,9 @@ public class Main extends Application { //TODO: Clean up all these variables
                 fullScreen = !fullScreen;
                 primaryStage.setFullScreen(fullScreen);
             } else if (Objects.requireNonNull(ke.getCode()) == KeyCode.ALT_GRAPH) {
-                System.out.println(preInput);
+                for (String setting : fontSettings) {
+                    System.out.println(setting);
+                }
             } else if (Objects.requireNonNull(ke.getCode()) == KeyCode.ALT) {
                 if (Objects.equals(state, "editingNote")) {
                     firstNoteLine = true;
@@ -184,6 +187,7 @@ public class Main extends Application { //TODO: Clean up all these variables
         }
         state = "home";
         signedIn = true;
+        refreshFont();
         clear(true);
     }
     public void managingState(Stage primaryStage) {
@@ -805,12 +809,12 @@ public class Main extends Application { //TODO: Clean up all these variables
                         switch (input) {
                             case "1":
                                 say("Enter new Font Size:");
-                                inputTypeRequired = "int";
+                                intIsRequired = true;
                                 state = "settingsValue";
                                 break;
                             case "2":
                                 choice("Select a font:", fontsFused);
-                                inputTypeRequired = "int";
+                                intIsRequired = true;
                                 state = "settingsValue";
                                 break;
                             case "3":
@@ -831,28 +835,43 @@ public class Main extends Application { //TODO: Clean up all these variables
         }
     }
     public void settingsValue(Stage primaryStage) {
-        if (input.matches("[0-9]+")) {
-            inputTypeGiven = "int";
-        } else {
-            inputTypeRequired = "String";
-        }
-        if (Objects.equals(inputTypeRequired, inputTypeGiven)) {
+        inputIsInt = input.matches("[0-9]+");
+        if (inputIsInt == intIsRequired || inputIsInt) {
             switch (currentEditedSetting) {
                 case "theme":
+                    switch (settingSelected) {
+
+                    }
+                    writeSettings("themes");
                     break;
                 case "font":
+                    switch (settingSelected) {
+                        case 1:
+                            break;
+                        case 3:
+                            if (Integer.parseInt(input) > fonts.length + 1) {
+                                say("Please type a number from 1-" + (fonts.length - 1) + "!");
+                                return;
+                            } else {
+                                Font font = Font.loadFont(("file:src/main/resources/console/consolas/fonts/" + fonts[Integer.parseInt(input) - 1]), Integer.parseInt(fontSettings[1]));
+                                textArea.setFont(font);
+                                newSettingValue = fonts[Integer.parseInt(input) - 1];
+                            }
+                            break;
+                    }
+                    writeSettings("font");
                     break;
                 case "account":
+                    switch (settingSelected) {
+
+                    }
+                    writeSettings("account");
                     break;
                 default:
                     System.out.println("Invalid Setting");
             }
         } else {
-            if (Objects.equals(inputTypeRequired, "int")) {
-                say("Please enter a number!");
-            } else {
-                say("Please enter text!");      //<- This code makes no sense every input is text wtf is even happening here
-            }
+            say("Please enter a number!");
         }
     }
 
@@ -933,6 +952,47 @@ public class Main extends Application { //TODO: Clean up all these variables
         }
         settingsFused += "; Go back";
         choice("What do you want to edit?", settingsFused);
+    }
+    void writeSettings(String settingCategory) {
+        switch (settingCategory) {
+            case "themes":
+                List<String> linesThemeSetting;
+                themeSettings[settingSelected] = newSettingValue;
+                try {
+                    linesThemeSetting = Files.readAllLines(Paths.get(settingsPath + "/themes.txt"), StandardCharsets.UTF_8);
+                    linesThemeSetting.set(settingSelected, newSettingValue);
+                    Files.write(Paths.get(settingsPath + "/themes.txt"), linesThemeSetting, StandardCharsets.UTF_8);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+            case "font":
+                List<String> linesFontSetting;
+                fontSettings[settingSelected] = newSettingValue;
+                try {
+                    linesFontSetting = Files.readAllLines(Paths.get(settingsPath + "/font.txt"), StandardCharsets.UTF_8);
+                    linesFontSetting.set(settingSelected, newSettingValue);
+                    Files.write(Paths.get(settingsPath + "/font.txt"), linesFontSetting, StandardCharsets.UTF_8);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+            case "account":
+                List<String> linesAccountSetting;
+                accountSettings[settingSelected] = newSettingValue;
+                try {
+                    linesAccountSetting = Files.readAllLines(Paths.get(settingsPath + "/account.txt"), StandardCharsets.UTF_8);
+                    linesAccountSetting.set(settingSelected, newSettingValue);
+                    Files.write(Paths.get(settingsPath + "/account.txt"), linesAccountSetting, StandardCharsets.UTF_8);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+        }
+    }
+    void refreshFont() {
+        Font font = Font.loadFont(("file:src/main/resources/console/consolas/fonts/" + fontSettings[3]), Integer.parseInt(fontSettings[1]));
+        textArea.setFont(font);
     }
 }
 
