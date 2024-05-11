@@ -1,4 +1,4 @@
 Font Size:
-20
+25
 Font Type:
-consolai.ttf
+CONSOLA.TTF

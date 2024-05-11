@@ -31,7 +31,10 @@ public class Main extends Application { //TODO: Clean up all these variables
     String[] noteContentSplit;
     String[] inputSplit;
     String[] lines = new String[0];
-    int maximalSettings = 32;
+    int maximalSettings = 32;           //Checklist for creating settings:
+    int themeSettingAmount = 0;         //1) Change these variables to fit the amount of settings
+    int fontSettingAmount = 2;          //2) Add to editSettings() (Change corresponding 'back' option)
+    int accountSettingAmount = 0;       //3) Add them to the templates
     String[] themeSettings = new String[maximalSettings];
     String[] fontSettings = new String[maximalSettings];
     String[] accountSettings = new String[maximalSettings];
@@ -77,6 +80,9 @@ public class Main extends Application { //TODO: Clean up all these variables
     int settingsAmount;
     Path userPath = java.nio.file.Paths.get("src/main/resources/console/consolas/accountData/usernames.txt");
     Path passPath = java.nio.file.Paths.get("src/main/resources/console/consolas/accountData/passwords.txt");
+    String themesSettingTemplate = "src/main/resources/console/consolas/templates/settings/themes_template.txt";
+    String fontSettingTemplate = "src/main/resources/console/consolas/templates/settings/font_template.txt";
+    String accountSettingTemplate = "src/main/resources/console/consolas/templates/settings/account_template.txt";
 
     @Override
     public void start(Stage primaryStage) {
@@ -141,6 +147,8 @@ public class Main extends Application { //TODO: Clean up all these variables
         });
     }
     public void createFiles() {
+        userFilePath = "src/main/resources/console/consolas/userData/account";
+        settingsPath = userFilePath;
         userFilePath += accountNumber;
         settingsPath += accountNumber;
         new File(userFilePath).mkdirs();
@@ -155,24 +163,51 @@ public class Main extends Application { //TODO: Clean up all these variables
             themesSettingFile.createNewFile();
             fontSettingFile.createNewFile();
             accountSettingFile.createNewFile();
+            settingsCounter = 0;
             for (String line : readAllLines(Paths.get(settingsPath + "/themes.txt"))) {
                 themeSettings[settingsCounter] = line;
                 settingsCounter++;
+            }
+            if (settingsCounter < (themeSettingAmount * 2)) {
+                var themeTemplateWriter = Files.newBufferedWriter(Paths.get(settingsPath + "/themes.txt"));
+                for (String line : readAllLines(Paths.get(themesSettingTemplate))) {
+                    themeTemplateWriter.write(line + "\n");
+                    themeSettings[settingsCounter] = line;
+                    settingsCounter++;
+                }
+                themeTemplateWriter.flush();
             }
             settingsCounter = 0;
             for (String line : readAllLines(Paths.get(settingsPath + "/font.txt"))) {
                 fontSettings[settingsCounter] = line;
                 settingsCounter++;
             }
+            if (settingsCounter < (fontSettingAmount * 2)) {
+                var fontTemplateWriter = Files.newBufferedWriter(Paths.get(settingsPath + "/font.txt"));
+                for (String line : readAllLines(Paths.get(fontSettingTemplate))) {
+                    fontTemplateWriter.write(line + "\n");
+                    fontSettings[settingsCounter] = line;
+                    settingsCounter++;
+                }
+                fontTemplateWriter.flush();
+            }
             settingsCounter = 0;
             for (String line : readAllLines(Paths.get(settingsPath + "/account.txt"))) {
                 accountSettings[settingsCounter] = line;
                 settingsCounter++;
             }
+            if (settingsCounter < (accountSettingAmount * 2)) {
+                var accountTemplateWriter = Files.newBufferedWriter(Paths.get(settingsPath + "/account.txt"));
+                for (String line : readAllLines(Paths.get(accountSettingTemplate))) {
+                    accountTemplateWriter.write(line + "\n");
+                    accountSettings[settingsCounter] = line;
+                    settingsCounter++;
+                }
+                accountTemplateWriter.flush();
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        userFilePath = "src/main/resources/console/consolas/userData/account";
         File fontFolder = new File("src/main/resources/console/consolas/fonts");
         File[] listOfFonts = fontFolder.listFiles();
         if (listOfFonts != null) {
@@ -803,12 +838,12 @@ public class Main extends Application { //TODO: Clean up all these variables
         settingSelected = (Integer.parseInt(input) * 2) - 1;
             switch (currentEditedSetting) {
                 case "theme":
-                    if (!Objects.equals(input, "1")) {      //Remember to change this value when adding settings!
+                    if (!Objects.equals(input, String.valueOf(themeSettingAmount + 1))) {
                         say("The current value is: " + themeSettings[settingSelected]);
                     }
                     break;
                 case "font":
-                    if (!Objects.equals(input, "3")) {      //Remember to change this value when adding settings!
+                    if (!Objects.equals(input, String.valueOf(themeSettingAmount + 1))) {
                         say("The current value is: " + fontSettings[settingSelected]);
                     }
                     switch (input) {
@@ -830,7 +865,7 @@ public class Main extends Application { //TODO: Clean up all these variables
                     }
                     break;
                 case "account":
-                    if (!Objects.equals(input, "1")) {      //Remember to change this value when adding settings!
+                    if (!Objects.equals(input, String.valueOf(themeSettingAmount + 1))) {
                         say("The current value is: " + accountSettings[settingSelected]);
                     }
                     break;
