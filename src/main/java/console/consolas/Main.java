@@ -1,6 +1,7 @@
 package console.consolas;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollBar;
@@ -33,8 +34,8 @@ public class Main extends Application { //TODO: Clean up all these variables
     String[] lines = new String[0];
     int maximalSettings = 32;           //Checklist for creating settings:
     int themeSettingAmount = 0;         //1) Change these variables to fit the amount of settings
-    int fontSettingAmount = 2;          //2) Add to editSettings() (Change corresponding 'back' option)
-    int accountSettingAmount = 0;       //3) Add them to the templates
+    int fontSettingAmount = 3;          //2) Add to editSettings() (Change corresponding 'back' option)         //TODO: Make settings reset when logging out
+    int accountSettingAmount = 0;       //3) Edit settingsValue() to add function and add them to the templates
     String[] themeSettings = new String[maximalSettings];
     String[] fontSettings = new String[maximalSettings];
     String[] accountSettings = new String[maximalSettings];
@@ -101,6 +102,7 @@ public class Main extends Application { //TODO: Clean up all these variables
         primaryStage.setFullScreenExitHint("");
         primaryStage.show();
         textArea.setWrapText(true);
+        textArea.setPadding(new Insets(5));
         ScrollBar scrollBar = (ScrollBar)textArea.lookup(".scroll-bar:vertical");
         scrollBar.setDisable(true);
         System.out.println("Running on JRE Version: " + System.getProperty("java.version"));
@@ -118,9 +120,7 @@ public class Main extends Application { //TODO: Clean up all these variables
                 fullScreen = !fullScreen;
                 primaryStage.setFullScreen(fullScreen);
             } else if (Objects.requireNonNull(ke.getCode()) == KeyCode.ALT_GRAPH) {
-                for (String setting : fontSettings) {
-                    System.out.println(setting);
-                }
+                choice("test", "1; 2; 3; 4; 5; 6; 7; 8; 9; 10; 11; 12");
             } else if (Objects.requireNonNull(ke.getCode()) == KeyCode.ALT) {
                 if (Objects.equals(state, "editingNote")) {
                     firstNoteLine = true;
@@ -169,6 +169,8 @@ public class Main extends Application { //TODO: Clean up all these variables
                 settingsCounter++;
             }
             if (settingsCounter < (themeSettingAmount * 2)) {
+                settingsCounter = 0;
+                Arrays.fill(themeSettings, null);
                 var themeTemplateWriter = Files.newBufferedWriter(Paths.get(settingsPath + "/themes.txt"));
                 for (String line : readAllLines(Paths.get(themesSettingTemplate))) {
                     themeTemplateWriter.write(line + "\n");
@@ -183,6 +185,8 @@ public class Main extends Application { //TODO: Clean up all these variables
                 settingsCounter++;
             }
             if (settingsCounter < (fontSettingAmount * 2)) {
+                settingsCounter = 0;
+                Arrays.fill(fontSettings, null);
                 var fontTemplateWriter = Files.newBufferedWriter(Paths.get(settingsPath + "/font.txt"));
                 for (String line : readAllLines(Paths.get(fontSettingTemplate))) {
                     fontTemplateWriter.write(line + "\n");
@@ -197,6 +201,8 @@ public class Main extends Application { //TODO: Clean up all these variables
                 settingsCounter++;
             }
             if (settingsCounter < (accountSettingAmount * 2)) {
+                settingsCounter = 0;
+                Arrays.fill(accountSettings, null);
                 var accountTemplateWriter = Files.newBufferedWriter(Paths.get(settingsPath + "/account.txt"));
                 for (String line : readAllLines(Paths.get(accountSettingTemplate))) {
                     accountTemplateWriter.write(line + "\n");
@@ -843,7 +849,7 @@ public class Main extends Application { //TODO: Clean up all these variables
                     }
                     break;
                 case "font":
-                    if (!Objects.equals(input, String.valueOf(themeSettingAmount + 1))) {
+                    if (!Objects.equals(input, String.valueOf(fontSettingAmount + 1))) {
                         say("The current value is: " + fontSettings[settingSelected]);
                     }
                     switch (input) {
@@ -858,6 +864,11 @@ public class Main extends Application { //TODO: Clean up all these variables
                             state = "settingsValue";
                             break;
                         case "3":
+                            say("Enter new Text Padding:");
+                            intIsRequired = true;
+                            state = "settingsValue";
+                            break;
+                        case "4":
                             state = "home";
                             break;
                         default:
@@ -865,7 +876,7 @@ public class Main extends Application { //TODO: Clean up all these variables
                     }
                     break;
                 case "account":
-                    if (!Objects.equals(input, String.valueOf(themeSettingAmount + 1))) {
+                    if (!Objects.equals(input, String.valueOf(accountSettingAmount + 1))) {
                         say("The current value is: " + accountSettings[settingSelected]);
                     }
                     break;
@@ -903,6 +914,11 @@ public class Main extends Application { //TODO: Clean up all these variables
                                 newSettingValue = fontSettings[3];
                                 refreshFont();
                             }
+                            break;
+                        case 5:
+                            fontSettings[5] = input;
+                            newSettingValue = fontSettings[1];
+                            refreshFont();
                             break;
                     }
                     choice(("Do you want to keep this change? (" + fontSettings[settingSelected - 1] + " " + fontSettings[settingSelected] + ")"), "Yes, keep the change; No, choose a different value; No, go back");
@@ -1070,6 +1086,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     void refreshFont() {
         Font font = Font.loadFont(("file:src/main/resources/console/consolas/fonts/" + fontSettings[3]), Integer.parseInt(fontSettings[1]));
         textArea.setFont(font);
+        textArea.setPadding(new Insets(Double.parseDouble(fontSettings[5])));
     }
 }
 
