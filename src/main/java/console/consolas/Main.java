@@ -35,7 +35,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     int maximalSettings = 32;           //Checklist for creating settings:
     int themeSettingAmount = 0;         //1) Change these variables to fit the amount of settings
     int fontSettingAmount = 3;          //2) Add to editSettings() (Change corresponding 'back' option)         //TODO: Make settings reset when logging out
-    int accountSettingAmount = 0;       //3) Edit settingsValue() to add function and add them to the templates
+    int accountSettingAmount = 1;       //3) Edit settingsValue() to add function and add them to the templates
     String[] themeSettings = new String[maximalSettings];
     String[] fontSettings = new String[maximalSettings];
     String[] accountSettings = new String[maximalSettings];
@@ -74,6 +74,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     boolean firstSetting;
     boolean inputIsInt;
     boolean intIsRequired;
+    boolean adminMode = false;
     int accountNumber;
     int noteEdited;
     int settingsCounter;
@@ -218,18 +219,21 @@ public class Main extends Application { //TODO: Clean up all these variables
         File[] listOfFonts = fontFolder.listFiles();
         if (listOfFonts != null) {
             fonts = new String[listOfFonts.length];
+            boolean firstFont = true;
             for (int x = 0; x < listOfFonts.length; x++) {
                 if (listOfFonts[x].isFile()) {
+                    if (!firstFont) {
+                        fontsFused += "; ";
+                    }
                     fonts[x] = (listOfFonts[x].getName());
                     fontsFused += (listOfFonts[x].getName());
-                    fontsFused += "; ";
+                    firstFont = false;
                 }
             }
-            fontsFused += "Go back";
         }
         state = "home";
         signedIn = true;
-        refreshFont();
+        refreshSettings();
         clear(true);
     }
     public void managingState(Stage primaryStage) {
@@ -251,7 +255,7 @@ public class Main extends Application { //TODO: Clean up all these variables
             Method method = this.getClass().getMethod(state, Stage.class);
             method.invoke(this, primaryStage);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            System.out.println("ERROR: If I see this error message again I am going to jump off a bridge");
+            System.out.println("ERROR: If I see this error message one more time I am going to jump off a bridge");
         }
     }
 
@@ -485,6 +489,7 @@ public class Main extends Application { //TODO: Clean up all these variables
                 state = "sol";
                 signedIn = false;
                 clear(false);
+                resetSettings();
                 choice("Do you want to Sign up or Log in?", "Sign Up; Log In");
                 break;
             case "2":
@@ -879,6 +884,18 @@ public class Main extends Application { //TODO: Clean up all these variables
                     if (!Objects.equals(input, String.valueOf(accountSettingAmount + 1))) {
                         say("The current value is: " + accountSettings[settingSelected]);
                     }
+                    switch (input) {
+                        case "1":
+                            choice("Display current Username below title?", "Yes; No");
+                            intIsRequired = true;
+                            state = "settingsValue";
+                            break;
+                        case "2":
+                            state = "home";
+                            break;
+                        default:
+                            say("Please type a number from 1-" + (settingsAmount + 1) + "!");
+                    }
                     break;
                 default:
                     System.out.println("Invalid Setting");
@@ -888,6 +905,7 @@ public class Main extends Application { //TODO: Clean up all these variables
         }
     }
     public void settingsValue(Stage primaryStage) {
+        boolean validSetting = true;
         inputIsInt = input.matches("[0-9]+");
         if (inputIsInt == intIsRequired || inputIsInt) {
             switch (currentEditedSetting) {
@@ -896,6 +914,9 @@ public class Main extends Application { //TODO: Clean up all these variables
                     switch (settingSelected) {
 
                     }
+                    if (validSetting) {
+                        choice(("Do you want to keep this change? (" + themeSettings[settingSelected - 1] + " " + themeSettings[settingSelected] + ")"), "Yes, keep the change; No, choose a different value; No, go back");
+                    }
                     break;
                 case "font":
                     oldSetting = fontSettings[settingSelected];
@@ -903,30 +924,43 @@ public class Main extends Application { //TODO: Clean up all these variables
                         case 1:
                             fontSettings[1] = input;
                             newSettingValue = fontSettings[1];
-                            refreshFont();
                             break;
                         case 3:
-                            if (Integer.parseInt(input) > fonts.length + 1) {
-                                say("Please type a number from 1-" + (fonts.length - 1) + "!");
-                                return;
+                            if (Integer.parseInt(input) > fonts.length || Integer.parseInt(input) == 0) {
+                                say("Please type a number from 1-" + (fonts.length) + "!");
+                                validSetting = false;
                             } else {
                                 fontSettings[3] = fonts[Integer.parseInt(input) - 1];
                                 newSettingValue = fontSettings[3];
-                                refreshFont();
                             }
                             break;
                         case 5:
                             fontSettings[5] = input;
                             newSettingValue = fontSettings[1];
-                            refreshFont();
                             break;
                     }
-                    choice(("Do you want to keep this change? (" + fontSettings[settingSelected - 1] + " " + fontSettings[settingSelected] + ")"), "Yes, keep the change; No, choose a different value; No, go back");
+                    if (validSetting) {
+                        choice(("Do you want to keep this change? (" + fontSettings[settingSelected - 1] + " " + fontSettings[settingSelected] + ")"), "Yes, keep the change; No, choose a different value; No, go back");
+                    }
                     break;
                 case "account":
                     oldSetting = accountSettings[settingSelected];
                     switch (settingSelected) {
-
+                        case 1:
+                            if (Integer.parseInt(input) > 2 || Integer.parseInt(input) == 0) {
+                                say("Please type a number from 1-2!");
+                                validSetting = false;
+                            } else {
+                                if (Integer.parseInt(input) == 1) {
+                                    accountSettings[1] = "true";
+                                } else {
+                                    accountSettings[1] = "false";
+                                }
+                            }
+                            break;
+                    }
+                    if (validSetting) {
+                        choice(("Do you want to keep this change? (" + accountSettings[settingSelected - 1] + " " + accountSettings[settingSelected] + ")"), "Yes, keep the change; No, choose a different value; No, go back");
                     }
                     break;
                 default:
@@ -934,8 +968,12 @@ public class Main extends Application { //TODO: Clean up all these variables
             }
         } else {
             say("Please enter a number!");
+            validSetting = false;
         }
-        state = "confirmSettings";
+        if (validSetting) {
+            refreshSettings();
+            state = "confirmSettings";
+        }
     }
     public void confirmSettings(Stage primaryStage) {
         switch (input) {
@@ -959,7 +997,7 @@ public class Main extends Application { //TODO: Clean up all these variables
                         accountSettings[settingSelected] = oldSetting;
                         break;
                 }
-                refreshFont();
+                refreshSettings();
                 say("Old setting has been restored!");
                 state = "home";
                 break;
@@ -991,8 +1029,16 @@ public class Main extends Application { //TODO: Clean up all these variables
     }
     void title() {
         try {
+            boolean firstTitleLine = true;
             for (String line : Files.readAllLines(pathTitle)) {
-                say(line);
+                if (!firstTitleLine) {
+                    textArea.appendText("\n");
+                }
+                textArea.appendText(line);
+                firstTitleLine = false;
+            }
+            if (Boolean.parseBoolean(accountSettings[1])) {     //TODO: make code work
+                say(currentUsername);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -1083,10 +1129,15 @@ public class Main extends Application { //TODO: Clean up all these variables
                 break;
         }
     }
-    void refreshFont() {
+    void refreshSettings() {
         Font font = Font.loadFont(("file:src/main/resources/console/consolas/fonts/" + fontSettings[3]), Integer.parseInt(fontSettings[1]));
         textArea.setFont(font);
         textArea.setPadding(new Insets(Double.parseDouble(fontSettings[5])));
+    }
+    void resetSettings() {
+        Font font = Font.loadFont(("file:src/main/resources/console/consolas/fonts/CONSOLA.TTF"), 20);
+        textArea.setFont(font);
+        textArea.setPadding(new Insets(5));
     }
 }
 
