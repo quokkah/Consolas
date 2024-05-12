@@ -124,7 +124,7 @@ public class Main extends Application { //TODO: Clean up all these variables
                 fullScreen = !fullScreen;
                 primaryStage.setFullScreen(fullScreen);
             } else if (Objects.requireNonNull(ke.getCode()) == KeyCode.ALT_GRAPH) {
-                refreshSettings();
+                System.out.println();
             } else if (Objects.requireNonNull(ke.getCode()) == KeyCode.ALT) {
                 if (Objects.equals(state, "editingNote")) {
                     firstNoteLine = true;
@@ -899,7 +899,7 @@ public class Main extends Application { //TODO: Clean up all these variables
                     }
                     switch (input) {
                         case "1":
-                            choice("Choose a theme:", "Default Theme; Powershell Theme; Cherry Theme; Light Theme; Coffee Theme; Leaf Theme; Blue Theme; Pikachu Theme");
+                            choice("Choose a theme:", "Default Theme; Powershell Theme; Cherry Theme; Light Theme; Coffee Theme; Leaf Theme; Blue Theme; Pikachu Theme; Hazard Theme");
                             intIsRequired = true;
                             state = "settingsValue";
                             break;
@@ -1202,7 +1202,9 @@ public class Main extends Application { //TODO: Clean up all these variables
         Font font = Font.loadFont(("file:src/main/resources/console/consolas/fonts/" + fontSettings[3]), Integer.parseInt(fontSettings[1]));
         textArea.setFont(font);
         textArea.setPadding(new Insets(Double.parseDouble(fontSettings[5])));
+        scene.getStylesheets().clear();
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource(("stylesheets/" + themeSettings[1]))).toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("stylesheets/stylesheet.css")).toExternalForm());
     }
     void resetSettings() {
         Font font = Font.loadFont(("file:src/main/resources/console/consolas/fonts/CONSOLA.TTF"), 20);
