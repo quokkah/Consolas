@@ -7,6 +7,7 @@ clear - Clear the screen
 username view|change - View or change your username
 password view|change - View or change your password
 notes - Write and read your own notes
+settings themes|font|... - View and edit settings, like themes and fonts
 
 System Controls:
 -back - Exit to main menu

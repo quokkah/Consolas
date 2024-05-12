@@ -3,4 +3,4 @@ Font Size:
 Font Type:
 CONSOLA.TTF
 Text Padding:
-20
+5

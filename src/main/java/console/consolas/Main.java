@@ -440,7 +440,36 @@ public class Main extends Application { //TODO: Clean up all these variables
                 case "se":
                 case "settings":
                     if (inputSplit.length > 1) {
-
+                        switch (inputSplit[1].toLowerCase()) {
+                            case "th":
+                            case "theme":
+                            case "themes":
+                                settingsFused = "";
+                                firstSetting = true;
+                                listSettings(themeSettings);
+                                state = "editSettings";
+                                currentEditedSetting = "theme";
+                                break;
+                            case "fo":
+                            case "font":
+                            case "fonts":
+                                settingsFused = "";
+                                firstSetting = true;
+                                listSettings(fontSettings);
+                                state = "editSettings";
+                                currentEditedSetting = "font";
+                                break;
+                            case "ac":
+                            case "account":
+                                settingsFused = "";
+                                firstSetting = true;
+                                listSettings(accountSettings);
+                                state = "editSettings";
+                                currentEditedSetting = "account";
+                                break;
+                            default:
+                                say("Unknown Command!");
+                        }
                     } else {
                         choice("What category do you want to view?", "Themes (WIP); Font; Account");
                         state = "settingsDefault";
@@ -939,7 +968,7 @@ public class Main extends Application { //TODO: Clean up all these variables
                             break;
                         case 5:
                             fontSettings[5] = input;
-                            newSettingValue = fontSettings[1];
+                            newSettingValue = fontSettings[5];
                             break;
                     }
                     if (validSetting) {
