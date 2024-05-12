@@ -1,5 +1,7 @@
 package console.consolas;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -10,6 +12,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.text.Font;
+import javafx.util.Duration;
 
 import java.io.File;
 import java.io.IOException;
@@ -1093,22 +1096,33 @@ public class Main extends Application { //TODO: Clean up all these variables
         }
     }
     void title() {
+        int titleLineAmount = 0;
         try {
             boolean firstTitleLine = true;
             for (String line : Files.readAllLines(pathTitle)) {
-                if (!firstTitleLine) {
-                    textArea.appendText("\n");
-                }
-                textArea.appendText(line);
-                firstTitleLine = false;
+                titleLineAmount++;
             }
-            if (Boolean.parseBoolean(accountSettings[1])) {
+            String[] titleLines = new String[titleLineAmount];
+            int titleLineCounter = 0;
+            for (String line : Files.readAllLines(pathTitle)) {
+                titleLines[titleLineCounter] = line;
+                titleLineCounter++;
+            }
+            Timeline timeline = new Timeline();
+            for (int i = 0; i < titleLines.length; i++) {
+                String titleLine = titleLines[i];
+                KeyFrame keyFrame = new KeyFrame(Duration.millis(i * 500),
+                        event -> say(titleLine));           //TODO: delete last line so it doesnt output twice
+                timeline.getKeyFrames().add(keyFrame);
+            }
+            timeline.play();
+            /*if (Boolean.parseBoolean(accountSettings[1])) {
                 for (int x = 0; x < 4; x++) {
                     textArea.appendText("\t    ");
                 }
                 say(currentUsername);
             }
-            textArea.appendText("\n");
+            textArea.appendText("\n");*/
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -1210,7 +1224,9 @@ public class Main extends Application { //TODO: Clean up all these variables
         Font font = Font.loadFont(("file:src/main/resources/console/consolas/fonts/CONSOLA.TTF"), 20);
         textArea.setFont(font);
         textArea.setPadding(new Insets(5));
+        scene.getStylesheets().clear();
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("stylesheets/theme1.css")).toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("stylesheets/stylesheet.css")).toExternalForm());
     }
 }
 
