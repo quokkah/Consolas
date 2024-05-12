@@ -40,13 +40,14 @@ public class Main extends Application { //TODO: Clean up all these variables
     String[] fontSettings = new String[maximalSettings];
     String[] accountSettings = new String[maximalSettings];
     String[] fonts;
+    String currentUsername;
     String settingsFused;
     String state = "sol";
     String savedState;  //Used to remember previous state
     String correctPass;
     String input;
     String usernameInput;
-    String currentUsername;
+    String usernameToChange;
     String currentPass;
     String unconfirmedUser;
     String unconfirmedPass;
@@ -121,7 +122,7 @@ public class Main extends Application { //TODO: Clean up all these variables
                 fullScreen = !fullScreen;
                 primaryStage.setFullScreen(fullScreen);
             } else if (Objects.requireNonNull(ke.getCode()) == KeyCode.ALT_GRAPH) {
-                choice("test", "1; 2; 3; 4; 5; 6; 7; 8; 9; 10; 11; 12");
+                System.out.println(accountSettings[1]);
             } else if (Objects.requireNonNull(ke.getCode()) == KeyCode.ALT) {
                 if (Objects.equals(state, "editingNote")) {
                     firstNoteLine = true;
@@ -300,7 +301,7 @@ public class Main extends Application { //TODO: Clean up all these variables
                 case "user":
                 case "username":
                     try (Stream<String> lines = Files.lines(userPath)) {
-                        currentUsername = lines.skip(accountNumber - 1).findFirst().get();
+                        usernameToChange = lines.skip(accountNumber - 1).findFirst().get();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -308,7 +309,7 @@ public class Main extends Application { //TODO: Clean up all these variables
                         switch (inputSplit[1]) {
                             case "vi":
                             case "view":
-                                say("Your current username is: '" + currentUsername + "'");
+                                say("Your current username is: '" + usernameToChange + "'");
                                 break;
                             case "ch":
                             case "change":
@@ -320,8 +321,8 @@ public class Main extends Application { //TODO: Clean up all these variables
                         }
                     } else {
                         state = "userDefault";
-                        currentUsername = "Your current username is: '" + currentUsername + "', do you want to change it?";
-                        choice(currentUsername, "Change it; Go back");
+                        usernameToChange = "Your current username is: '" + usernameToChange + "', do you want to change it?";
+                        choice(usernameToChange, "Change it; Go back");
                     }
                     break;
                 case "pa":
@@ -501,6 +502,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     }
     public void signUpUs(Stage primaryStage) {
         if (dataReqs(input, "Username")) {
+            currentUsername = input;
             state = "signUpPass";
             usernameInput = input;
             say("Password: ");
@@ -540,6 +542,7 @@ public class Main extends Application { //TODO: Clean up all these variables
                 accountNumber++;
                 if (Objects.equals(line, input)) {
                     usernameExists = true;
+                    currentUsername = line;
                     break;
                 }
             }
@@ -583,7 +586,7 @@ public class Main extends Application { //TODO: Clean up all these variables
     }
     public void userChange(Stage primaryStage) {
         unconfirmedUser = input;
-        if (!Objects.equals(unconfirmedUser, currentUsername)) {
+        if (!Objects.equals(unconfirmedUser, usernameToChange)) {
             if (dataReqs(unconfirmedUser, "Username")) {
                 choice("Do you want to change your username to '" + unconfirmedUser + "'?", "Yes; No");
                 state = "userConfirm";
@@ -886,7 +889,7 @@ public class Main extends Application { //TODO: Clean up all these variables
                     }
                     switch (input) {
                         case "1":
-                            choice("Display current Username below title?", "Yes; No");
+                            choice("Display current Username below title? (Clearing the screen is necessary for effect to take place)", "Yes; No");
                             intIsRequired = true;
                             state = "settingsValue";
                             break;
@@ -956,6 +959,7 @@ public class Main extends Application { //TODO: Clean up all these variables
                                 } else {
                                     accountSettings[1] = "false";
                                 }
+                                newSettingValue = accountSettings[1];
                             }
                             break;
                     }
@@ -1037,9 +1041,13 @@ public class Main extends Application { //TODO: Clean up all these variables
                 textArea.appendText(line);
                 firstTitleLine = false;
             }
-            if (Boolean.parseBoolean(accountSettings[1])) {     //TODO: make code work
+            if (Boolean.parseBoolean(accountSettings[1])) {
+                for (int x = 0; x < 4; x++) {
+                    textArea.appendText("\t    ");
+                }
                 say(currentUsername);
             }
+            textArea.appendText("\n");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
