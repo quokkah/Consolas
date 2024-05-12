@@ -33,9 +33,10 @@ public class Main extends Application { //TODO: Clean up all these variables
     String[] inputSplit;
     String[] lines = new String[0];
     int maximalSettings = 32;           //Checklist for creating settings:
-    int themeSettingAmount = 0;         //1) Change these variables to fit the amount of settings
+    int themeSettingAmount = 1;         //1) Change these variables to fit the amount of settings
     int fontSettingAmount = 3;          //2) Add to editSettings() (Change corresponding 'back' option)         //TODO: Make settings reset when logging out
     int accountSettingAmount = 1;       //3) Edit settingsValue() to add function and add them to the templates
+    int themeAmount;
     String[] themeSettings = new String[maximalSettings];
     String[] fontSettings = new String[maximalSettings];
     String[] accountSettings = new String[maximalSettings];
@@ -86,16 +87,17 @@ public class Main extends Application { //TODO: Clean up all these variables
     String themesSettingTemplate = "src/main/resources/console/consolas/templates/settings/themes_template.txt";
     String fontSettingTemplate = "src/main/resources/console/consolas/templates/settings/font_template.txt";
     String accountSettingTemplate = "src/main/resources/console/consolas/templates/settings/account_template.txt";
+    StackPane root = new StackPane();
+    Scene scene = new Scene(root);
 
     @Override
     public void start(Stage primaryStage) {
-        StackPane root = new StackPane();
         Font font = Font.loadFont("file:src/main/resources/console/consolas/fonts/CONSOLA.TTF", 20);
         textArea.setFont(font);
         StackPane.setAlignment(textArea, Pos.TOP_LEFT);
         root.getChildren().add(textArea);
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("stylesheet.css")).toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("stylesheets/stylesheet.css")).toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("stylesheets/theme1.css")).toExternalForm());
         primaryStage.setTitle("Consolas");
         primaryStage.setScene(scene);
         primaryStage.setX(0);
@@ -122,7 +124,7 @@ public class Main extends Application { //TODO: Clean up all these variables
                 fullScreen = !fullScreen;
                 primaryStage.setFullScreen(fullScreen);
             } else if (Objects.requireNonNull(ke.getCode()) == KeyCode.ALT_GRAPH) {
-                System.out.println(accountSettings[1]);
+                refreshSettings();
             } else if (Objects.requireNonNull(ke.getCode()) == KeyCode.ALT) {
                 if (Objects.equals(state, "editingNote")) {
                     firstNoteLine = true;
@@ -231,6 +233,17 @@ public class Main extends Application { //TODO: Clean up all these variables
                     firstFont = false;
                 }
             }
+        }
+        File stylesheetFolder = new File("src/main/resources/console/consolas/stylesheets");
+        File[] listOfThemes = stylesheetFolder.listFiles();
+        if (listOfThemes != null) {
+            themeAmount = 0;
+            for (File listOfTheme : listOfThemes) {
+                if (listOfTheme.isFile()) {
+                    themeAmount++;
+                }
+            }
+            themeAmount--;
         }
         state = "home";
         signedIn = true;
@@ -884,6 +897,18 @@ public class Main extends Application { //TODO: Clean up all these variables
                     if (!Objects.equals(input, String.valueOf(themeSettingAmount + 1))) {
                         say("The current value is: " + themeSettings[settingSelected]);
                     }
+                    switch (input) {
+                        case "1":
+                            choice("Choose a theme:", "Default Theme; Powershell Theme; Cherry Theme; Light Theme; Coffee Theme; Leaf Theme; Blue Theme; Pikachu Theme");
+                            intIsRequired = true;
+                            state = "settingsValue";
+                            break;
+                        case "2":
+                            state = "home";
+                            break;
+                        default:
+                            say("Please type a number from 1-" + (settingsAmount + 1) + "!");
+                    }
                     break;
                 case "font":
                     if (!Objects.equals(input, String.valueOf(fontSettingAmount + 1))) {
@@ -944,7 +969,14 @@ public class Main extends Application { //TODO: Clean up all these variables
                 case "theme":
                     oldSetting = themeSettings[settingSelected];
                     switch (settingSelected) {
-
+                        case 1:
+                            if (Integer.parseInt(input) > themeAmount || Integer.parseInt(input) == 0) {
+                                say("Please type a number from 1-" + themeAmount + "!");
+                            } else {
+                                themeSettings[1] = ("theme" + input + ".css");
+                                newSettingValue = themeSettings[1];
+                            }
+                            break;
                     }
                     if (validSetting) {
                         choice(("Do you want to keep this change? (" + themeSettings[settingSelected - 1] + " " + themeSettings[settingSelected] + ")"), "Yes, keep the change; No, choose a different value; No, go back");
@@ -959,7 +991,7 @@ public class Main extends Application { //TODO: Clean up all these variables
                             break;
                         case 3:
                             if (Integer.parseInt(input) > fonts.length || Integer.parseInt(input) == 0) {
-                                say("Please type a number from 1-" + (fonts.length) + "!");
+                                say("Please type a number from 1-" + fonts.length + "!");
                                 validSetting = false;
                             } else {
                                 fontSettings[3] = fonts[Integer.parseInt(input) - 1];
@@ -1170,11 +1202,13 @@ public class Main extends Application { //TODO: Clean up all these variables
         Font font = Font.loadFont(("file:src/main/resources/console/consolas/fonts/" + fontSettings[3]), Integer.parseInt(fontSettings[1]));
         textArea.setFont(font);
         textArea.setPadding(new Insets(Double.parseDouble(fontSettings[5])));
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource(("stylesheets/" + themeSettings[1]))).toExternalForm());
     }
     void resetSettings() {
         Font font = Font.loadFont(("file:src/main/resources/console/consolas/fonts/CONSOLA.TTF"), 20);
         textArea.setFont(font);
         textArea.setPadding(new Insets(5));
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("stylesheets/theme1.css")).toExternalForm());
     }
 }
 

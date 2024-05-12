@@ -1,0 +1,12 @@
+.text-area {
+    -fx-highlight-fill: #76ABAE;
+    -fx-text-fill: #76ABAE;
+    -fx-control-inner-background: #222831;
+    -fx-highlight-text-fill: #222831;
+}
+
+.text-area:focused .content {
+    -fx-background-color: transparent, #222831, transparent, #222831;
+}
+
+/*Powershell Theme*/

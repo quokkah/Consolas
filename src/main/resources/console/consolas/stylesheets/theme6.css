@@ -1,0 +1,12 @@
+.text-area {
+    -fx-highlight-fill: #AFC8AD;
+    -fx-text-fill: #AFC8AD;
+    -fx-control-inner-background: #4c6f52;
+    -fx-highlight-text-fill: #4c6f52;
+}
+
+.text-area:focused .content {
+    -fx-background-color: transparent, #4c6f52, transparent, #4c6f52;
+}
+
+/*Leaf Theme*/

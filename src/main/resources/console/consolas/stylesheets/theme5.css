@@ -1,0 +1,12 @@
+.text-area {
+    -fx-highlight-fill: #FFF2E1;
+    -fx-text-fill: #FFF2E1;
+    -fx-control-inner-background: #A79277;
+    -fx-highlight-text-fill: #A79277;
+}
+
+.text-area:focused .content {
+    -fx-background-color: transparent, #A79277, transparent, #A79277;
+}
+
+/*Coffee Theme*/

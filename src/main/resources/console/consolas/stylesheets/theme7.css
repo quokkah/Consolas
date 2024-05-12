@@ -1,0 +1,12 @@
+.text-area {
+    -fx-highlight-fill: #334756;
+    -fx-text-fill: #334756;
+    -fx-control-inner-background: #000000;
+    -fx-highlight-text-fill: #000000;
+}
+
+.text-area:focused .content {
+    -fx-background-color: transparent, #000000, transparent, #000000;
+}
+
+/*Blue Theme*/

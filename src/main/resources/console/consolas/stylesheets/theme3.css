@@ -1,0 +1,12 @@
+.text-area {
+    -fx-highlight-fill: #FF9BD2;
+    -fx-text-fill: #FF9BD2;
+    -fx-control-inner-background: #402B3A;
+    -fx-highlight-text-fill: #402B3A;
+}
+
+.text-area:focused .content {
+    -fx-background-color: transparent, #402B3A, transparent, #402B3A;
+}
+
+/*Cherry Theme*/

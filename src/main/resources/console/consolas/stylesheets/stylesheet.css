@@ -1,0 +1,14 @@
+.root {
+    -fx-background-color: #000000;
+    -fx-border-color: #000000;
+}
+
+.text-area {
+    -fx-background-color: #000000;
+    -fx-background-insets: 0;
+}
+
+.text-area .scroll-bar:vertical:disabled {
+    -fx-opacity: 0;
+}
+

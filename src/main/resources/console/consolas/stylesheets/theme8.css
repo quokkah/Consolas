@@ -1,0 +1,13 @@
+.text-area {
+    -fx-highlight-fill: #F0A500;
+    -fx-text-fill: #F0A500;
+    -fx-control-inner-background: #000000;
+    -fx-highlight-text-fill: #000000;
+}
+
+.text-area:focused .content {
+    -fx-background-color: transparent, #000000, transparent, #000000;
+}
+
+/*Pikachu Theme*/
+/*Please dont sue me Nintendo*/
