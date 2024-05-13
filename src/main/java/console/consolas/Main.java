@@ -975,6 +975,7 @@ public class Main extends Application { //TODO: Clean up all these variables
                         case 1:
                             if (Integer.parseInt(input) > themeAmount || Integer.parseInt(input) == 0) {
                                 say("Please type a number from 1-" + themeAmount + "!");
+                                validSetting = false;
                             } else {
                                 themeSettings[1] = ("theme" + input + ".css");
                                 newSettingValue = themeSettings[1];
